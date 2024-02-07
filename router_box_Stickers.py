@@ -34,11 +34,11 @@ barcode_height = 16 * mm  # Reduced barcode height
 
 # Load the Excel file into a pandas DataFrame
 # Make sure to replace 'your_excel_file.xlsx' with the actual path to your Excel file
-df = pd.read_excel('jio300_7feb24.xlsx', engine='openpyxl')  # Ensure you have 'openpyxl' installed for .xlsx files
+df = pd.read_excel('modified_file.xlsx', engine='openpyxl')  # Ensure you have 'openpyxl' installed for .xlsx files
 
 # Assuming the column names you want to select are 'ColumnName1' and 'ColumnName2'
 # Replace these with the actual column names from your Excel file
-column_name_1 = 'sn'
+column_name_1 = 'SN'
 column_name_2 = 'WAN_MAC'
 
 try:
@@ -48,19 +48,20 @@ try:
 except KeyError as ke:
     print("\033[31mColumns are not properly named.\033[0m")
 
+no_of_barcode = len(val1)
 
 
 exampleData="""
 EXAMPLE DATA:-
 
-+----------------+--------------+
-| SN             | WAN_MAC      |
-+----------------+--------------+
-| RCRODBK01290001| 44B59C004653 |
-| RCRODBK01290002| 44B59C004655 |
-| RCRODBK01290003| 44B59C004657 |
-| RCRODBK01290004| 44B59C004659 |
-+----------------+--------------+"""
++----------------+-------------------+
+| SN             | WAN_MAC           |
++----------------+-------------------+
+| RCRODBK01290001| 44:B5:9C:00:46:53 |
+| RCRODBK01290002| 44:B5:9C:00:46:55 |
+| RCRODBK01290003| 44:B5:9C:00:46:57 |
+| RCRODBK01290004| 44:B5:9C:00:46:59 |
++----------------+-------------------+"""
 
 
 
@@ -166,7 +167,7 @@ def create_stickers(data1, data2, data3, barcodes):
             #barcode_x for - to move left barecode_y to - to move down
             c.drawImage(macid_image_filename, barcode_x-25, barcode_y-130, width=150+70, height=55)
             c.drawString(barcode_x-70, barcode_y-100, "MAC :")
-            i=i+1
+            
 
 
 
@@ -176,8 +177,8 @@ def create_stickers(data1, data2, data3, barcodes):
             os.remove(ean_image_filename)
 
             #ProgressBar
-            print_progress_bar(page, start_time, num_pages)
-            
+            print_progress_bar(i, start_time, no_of_barcode)
+            i=i+1
         # Add a new page for the next set of stickers
         if page < num_pages - 1:
             c.showPage()
@@ -224,6 +225,7 @@ def print_progress_bar(page, start_time, total_pages):
 
 
 
+
 # Usage example
 data1 = 'Commodity'
 data1a =': Credo CR-3120-OD Router'
@@ -249,6 +251,8 @@ i = 1
 
 print()
 pdf_path = create_stickers(data1, data2, data3, barcodes)
+
+print()
 print(f"Sticker PDF created: {pdf_path}")
 
 
