@@ -43,7 +43,9 @@ def boxStickers(data, ctnno):
 
     start_time = time.time()
     
-    msn = "M5005491008BKA00" #Add without box number
+    # MODEL MSN
+    # msn = "M5005491008BKA00" #Add without box number
+    msn = "M5005571808BKA00"
            
     ean = "0796554198316"
 
@@ -59,7 +61,11 @@ def boxStickers(data, ctnno):
     val1 = []
     val2 = []
 
-    val1 = data['SN'][1:]
+    # Replace values
+    RSN_columnName = 'RSN' 
+    MAC_columnName = 'MAC'
+
+    val1 = data['RSN'][1:]
     val2 = data['MAC'][1:]
 
     no_of_barcode = len(val1)
@@ -120,14 +126,16 @@ def boxStickers(data, ctnno):
 
         pdf.drawString(x2, y2, f"Commodity: Credo CR-3120-OD")
         pdf.drawString(x2, y2-20, f"Color: White")
-        pdf.drawString(x2, y2-40, f"PO: I03/450054910")
+                            # MODEL PO I03/45005571
+        pdf.drawString(x2, y2-40, f"PO: I03/450055718")
+        
         pdf.drawString(x2, y2-60, f"Date:02/2024")
 
         pdf.drawString(x2, y2-100, f"Gross Wt : {round(oneBox_Gross_Weight * no_of_barcode, 2)} Kg")
         pdf.drawString(x2, y2-120, f"Net Wt. : {round(oneBox_Net_Weight * no_of_barcode, 2)} Kg")
 
         ## Above text right ##
-        pdf.drawString(x2+400, y2, f"Carton No. : {ctnno} of 17") #make dynamic value
+        pdf.drawString(x2+400, y2, f"Carton No. : {ctnno} of 28") #make dynamic value
         pdf.drawString(x2+480, y2-20, f"Qty : {no_of_barcode}")
 
 
@@ -232,7 +240,7 @@ def extract_data_below_values(sheet, search_values):
     return pd.DataFrame({f"{sheet.title}_1": first_column_data}), None
 
 
-# Function to process the Excel data and extract SN and MAC for each box
+# Function to process the Excel data and extract RSN and MAC for each box
 def extract_sn_mac(excel_data):
     # Dictionary to hold the box data
     box_data = {}
@@ -241,11 +249,11 @@ def extract_sn_mac(excel_data):
 
     for index, row in excel_data.iterrows():
         # Check if any of the terms in boxvalue4search are in the first cell of the row
-        if any(search_term in str(row[0]).lower() for search_term in boxvalue4search):
+        if any(search_term in str(row[0]).lower().replace('.','') for search_term in boxvalue4search):
             current_box = str(row[0])  # Update the current box number
-            box_data[current_box] = {'SN': [], 'MAC': []}
+            box_data[current_box] = {'RSN': [], 'MAC': []}
         elif pd.notnull(row[1]) and pd.notnull(row[2]) and current_box:
-            box_data[current_box]['SN'].append(row[1])
+            box_data[current_box]['RSN'].append(row[1])
             box_data[current_box]['MAC'].append(row[2])
 
     return box_data
@@ -256,7 +264,11 @@ startFrom = int(input("Enter Box no. to start with : "))  # Assuming we are star
 
 
 # Load the entire workbook once, instead of in the loop
-location = 'carton_jio300_7feb24.xlsx'
+location = 'boxData\carton_jio_500_27_box.xlsx'
+
+# MODEL DATASET
+# location = 'MODEL_carton_jio300_7feb24.xlsx'
+
 df = pd.read_excel(location)  # You would use the actual path to your Excel file
 
 # Extract the data for all boxes once
@@ -280,9 +292,9 @@ for box_number in sorted_box_numbers:
 def print_formatted_data(box_data):
     for box, details in box_data.items():
         print(f"Data for {box}:")
-        print(f"{'SN':<20} {'MAC':<20}")
+        print(f"{'RSN':<20} {'MAC':<20}")
         # Skip the first element of each list because it's the header based on how we simulated the data
-        for sn, mac in zip(details['SN'][1:], details['MAC'][1:]):
+        for sn, mac in zip(details['RSN'][1:], details['MAC'][1:]):
             print(f"{sn:<20} {mac:<20}")
         print("\n")
 
