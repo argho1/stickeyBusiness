@@ -15,6 +15,23 @@ from PyPDF2 import PdfWriter, PdfReader
 from reportlab.lib.pagesizes import letter, A4, landscape
 
 
+##Defining colors for output.##
+# Normal colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
+
+# Brighter shades
+BRIGHT_RED='\033[1;31m'
+BRIGHT_GREEN='\033[1;32m'
+BRIGHT_BLUE='\033[1;34m'
+BRIGHT_YELLOW='\033[1;33m'
+
+# No Color
+NO_COLOR='\033[0m'  
+
+
 
 # Utility Functions
 def print_banner(text):
@@ -37,7 +54,7 @@ def chooseFile(folder_path):
                     print_banner("Taking you back in time.")
                     sys.exit(1)
                 if 1 <= choice <= len(files):
-                    return files[choice - 1]
+                    return f'{folder_path}{files[choice - 1]}'
                 else:
                     print("Invalid choice. Please enter a valid number.")
             except ValueError:
@@ -99,6 +116,9 @@ def print_progress_bar(page, start_time, total_pages):
 
 
 
+
+
+
 def router_body_stickers():
     print()
     eanno = "0796554198316"
@@ -112,7 +132,7 @@ def router_body_stickers():
     barcode_height = 16 * mm  # Reduced barcode height
 
 
-    chosen_excel_file = chooseFile(".")
+    chosen_excel_file = chooseFile("./")
 
 
     # Load the Excel file into a pandas DataFrame
@@ -146,13 +166,13 @@ def router_body_stickers():
         print()
         print("\033[33mPlease have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like example below.\033[0m")
         print(exampleData)
-        sys.exit(1)
+        return
 
 
 
 
     # count
-    i = 1
+    #i = 1
     # Usage example
     commodity_text_print = "Commodity: Outdoor Router"
     model_text_print = "Model: Credo CR-3120-OD"
@@ -167,25 +187,25 @@ def router_body_stickers():
         print()
         print("\x1b[31mValue missing or MAC vs Serial Number count mismatch!!\x1b[0m")
         print("\x1b[31mPlease Check Excel Sheet and Try Again!!\x1b[0m")
+        print("\033[31mColumns are not properly named.\033[0m")
+        exampleData="""\033[33m
+        EXAMPLE DATA:-
+
+        +----------------+-------------------+
+        | SN             | WAN_MAC           |
+        +----------------+-------------------+
+        | RCRODBK01290001| 44:B5:9C:00:46:53 |
+        | RCRODBK01290002| 44:B5:9C:00:46:55 |
+        | RCRODBK01290003| 44:B5:9C:00:46:57 |
+        | RCRODBK01290004| 44:B5:9C:00:46:59 |
+        +----------------+-------------------+\033[0m"""
         print()
-        sys.exit(1)
+        print("\033[33mPlease have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like example below.\033[0m")
+        print(exampleData)
+        return
 
 
     no_of_barcode = len(serial_number_list)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     #code to make stickrs pdf
@@ -206,7 +226,7 @@ def router_body_stickers():
             num_stickers_per_col = 3
             stickers_per_page = num_stickers_per_row * num_stickers_per_col
             num_pages = (len(barcodes) + stickers_per_page - 1) // stickers_per_page
-            global i
+            i = 1
 
             for page in range(num_pages):
                 start_idx = page * stickers_per_page
@@ -300,8 +320,6 @@ def router_body_stickers():
             print_banner("Rage Quit Inititated!! Deleteing ./bufferDEL folder.")
             shutil.rmtree(directory)
             sys.exit(1)
-
-
 
 
 
@@ -463,6 +481,23 @@ def router_box_stickers():
     except KeyError as ke:
         print("\033[31mColumns are not properly named.\033[0m")
 
+        exampleData="""
+    EXAMPLE DATA:-
+
+    +----------------+-------------------+
+    | SN             | WAN_MAC           |
+    +----------------+-------------------+
+    | RCRODBK01290001| 44:B5:9C:00:46:53 |
+    | RCRODBK01290002| 44:B5:9C:00:46:55 |
+    | RCRODBK01290003| 44:B5:9C:00:46:57 |
+    | RCRODBK01290004| 44:B5:9C:00:46:59 |
+    +----------------+-------------------+"""
+
+
+
+    print("Please have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like exaple below.")
+    print(exampleData)
+
     no_of_barcode = len(sn_list)
 
 
@@ -493,22 +528,7 @@ def router_box_stickers():
     print()
 
 
-    exampleData="""
-    EXAMPLE DATA:-
 
-    +----------------+-------------------+
-    | SN             | WAN_MAC           |
-    +----------------+-------------------+
-    | RCRODBK01290001| 44:B5:9C:00:46:53 |
-    | RCRODBK01290002| 44:B5:9C:00:46:55 |
-    | RCRODBK01290003| 44:B5:9C:00:46:57 |
-    | RCRODBK01290004| 44:B5:9C:00:46:59 |
-    +----------------+-------------------+"""
-
-
-
-    print("Please have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like exaple below.")
-    print(exampleData)
 
 
 
@@ -548,23 +568,338 @@ def router_box_stickers():
     #'module_width': 10, 'module_height': 80, "font_size": 20*5, "text_distance": 28
 
 
-# def router_carton_stickers():
+def cartonStickers():
+
+    # Function to print the data in a formatted way
+    # def print_formatted_data(box_data):
+        # for box, details in box_data.items():
+        #     print(f"Data for {box}:")
+        #     print(f"{'RSN':<20} {'MAC':<20}")
+        #     # Skip the first element of each list because it's the header based on how we simulated the data
+        #     for sn, mac in zip(details['RSN'][1:], details['MAC'][1:]):
+        #         print(f"{sn:<20} {mac:<20}")
+        #     print("\n")
+
+    # Function to process the Excel data and extract RSN and MAC for each box
+    def extract_sn_mac(excel_data):
+        # Dictionary to hold the box data
+        box_data = {}
+        boxvalue4search = ['box', 'box no']  # List of strings to search for
+        current_box = None  # To keep track of the current box number
+
+        for index, row in excel_data.iterrows():
+            # Check if any of the terms in boxvalue4search are in the first cell of the row
+            if any(search_term in str(row[0]).lower().replace('.','') for search_term in boxvalue4search):
+                current_box = str(row[0])  # Update the current box number
+                box_data[current_box] = {'RSN': [], 'MAC': []}
+            elif pd.notnull(row[1]) and pd.notnull(row[2]) and current_box:
+                box_data[current_box]['RSN'].append(row[1])
+                box_data[current_box]['MAC'].append(row[2])
+
+        return box_data
+
+    # Function to extract data below the search values in the same column
+    # def extract_data_below_values(sheet, search_values):
+    #     # Iterate through all cells and search for the specified values
+    #     for row in sheet.iter_rows(min_row=1, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column):
+    #         for cell in row:
+    #             # Normalize the cell value for comparison
+    #             normalized_cell_value = str(cell.value).lower().replace(' ', '').replace('.', '').replace('\xa0', '')
+
+    #             # Search for the normalized values
+    #             if any(search_value in normalized_cell_value for search_value in search_values):
+    #                 # Get the row and column indices
+    #                 row_index = cell.row
+    #                 col_index = cell.column
+
+    #                 # Extract the data below the values in the same column
+    #                 data = [sheet.cell(i, col_index).value for i in range(row_index + 1, sheet.max_row + 1)]
+
+    #                 # Return a tuple with both data and column index
+    #                 return pd.DataFrame({f"{sheet.title}_{col_index}": data}), col_index
+
+    #     # If none of the search values are found, extract all non-empty values from the first column
+    #     first_column_data = [sheet.cell(i, 1).value for i in range(1, sheet.max_row + 1) if sheet.cell(i, 1).value is not None]
+
+    #     # Return a DataFrame with the first column data and None for the column index
+    #     return pd.DataFrame({f"{sheet.title}_1": first_column_data}), None
+
+    def boxStickers(data, ctnno, total_boxes):
+
+        start_time = time.time()
+        
+        # MODEL MSN
+        # msn = "M5005491008BKA00" #Add without box number
+        msn = "M5005571808BKA00"
+            
+        ean = "0796554198316"
+
+        #ctnno = input("Enter Carton No. : ")
+
+        # Create PDF canvas
+        pdf = canvas.Canvas(f'Cartion_Box_Sticker_pdf/Box{ctnno}.pdf', pagesize=A4)
+
+
+
+
+        #collecting data fomr excel file and storing it in an array
+        val1 = []
+        val2 = []
+
+        # Replace values
+        RSN_columnName = 'RSN' 
+        MAC_columnName = 'MAC'
+
+        val1 = data['RSN'][1:]
+        val2 = data['MAC'][1:]
+
+        no_of_barcode = len(val1)
+
+        # Barcode per box
+        barcode_per_page = 12 #int(input("Enter Barcode Per Page (12 max) :"))
+
+
+        
+        
+        
+
+        if int(ctnno) <= 9:
+            ctnno = "0"+str(ctnno)
+
+        msn = (msn+ str(ctnno))
+
+        #no = int(input('Start RSN for this sheet : '))
+
+
+        
+        # Variables to track page count and barcode count
+        page_count = 0
+        barcode_count = 0
+
+        # Iterate through rows in the Excel sheet
+        i = 0
+
+        font_size = 10
+
+        # Constants for positioning barcodes on the page
+        x_start = 10 * mm  # Starting x position (20mm from the left margin)
+        y_start = 235 * mm  # Starting y position (280mm from the bottom margin)
+        x_increment = 0  # No horizontal spacing between barcodes in a row
+        y_increment = 18 * mm  # Vertical spacing between barcodes (adjusted to make them closer)
+        barcode_width = 90 * mm  # Barcode width
+        barcode_height = 16 * mm  # Reduced barcode height
+
+        #wight of one in kg
+        oneBox_Gross_Weight = 1.241
+        oneBox_Net_Weight = 1.016
+
+
+
+        while i < len(val1): 
+
+            # Calculate position on the page
+            x = x_start+10 # Adjust space from right
+            y = y_start - ((barcode_count % barcode_per_page) * y_increment) - 50  # Adjusted to place 14 barcodes in a column
+
+            x1 = x_start+290 # Adjust space from right
+            y1 = y_start - ((barcode_count % barcode_per_page) * y_increment) - 50
+
+            x2 = 20
+            y2 = 800
+            
+            ## Above text left ##
+            pdf.setFont("Helvetica", 15)
+
+            pdf.drawString(x2, y2, f"Commodity: Credo CR-3120-OD")
+            pdf.drawString(x2, y2-20, f"Color: White")
+                                # MODEL PO I03/45005571
+            pdf.drawString(x2, y2-40, f"PO: I03/450055718")
+            
+            pdf.drawString(x2, y2-60, f"Date:02/2024")
+
+            pdf.drawString(x2, y2-100, f"Gross Wt : {round(oneBox_Gross_Weight * no_of_barcode, 2)} Kg")
+            pdf.drawString(x2, y2-120, f"Net Wt. : {round(oneBox_Net_Weight * no_of_barcode, 2)} Kg")
+
+            ## Above text right ##
+            pdf.drawString(x2+400, y2, f"Carton No. : {ctnno} of {total_boxes}") #make dynamic value
+            pdf.drawString(x2+480, y2-20, f"Qty : {no_of_barcode}")
+
+
+            msn1 = Code128(msn, writer=ImageWriter())
+            msn_image = msn1.render(writer_options={'module_width': 4, 'module_height': 80, "font_size": 20*5, "text_distance": 40, "quite_zone": 10})
+            msn_image_filename = (f"./bufferDEL/msn_barcode.png")
+            msn_image.save(msn_image_filename)
+            pdf.drawImage(msn_image_filename, x2+310, y2-75, width=barcode_width, height=barcode_height)
+            pdf.drawString(x2+260, y2-50, f"MSN:")
+
+
+            ean1 = Code128(ean, writer=ImageWriter())
+            ean_image = ean1.render(writer_options={'module_width': 4, 'module_height': 80, "font_size": 20*5, "text_distance": 40, "quite_zone": 10})
+            ean_image_filename = (f"./bufferDEL/ean_barcode.png")
+            ean_image.save(ean_image_filename)
+            pdf.drawImage(ean_image_filename, x2+310, y2-125, width=barcode_width, height=barcode_height)
+            pdf.drawString(x2+260, y2-100, f"EAN:")
+
+
+
+            pdf.setFont("Helvetica-Bold", font_size-1)
+            
+            ## RSN placed on the left side of the page. 
+
+            # Insert barcode image into PDF
+            rsn = Code128(val1[i], writer=ImageWriter())
+            rsn_image = rsn.render(writer_options={'module_width': 2.8, 'module_height': 80, "font_size": 20*5  , "text_distance": 40, "quite_zone": 10})
+            rsn_image_filename = (f"./bufferDEL/rsn_barcode_{i}.png")
+            rsn_image.save(rsn_image_filename)
+            pdf.drawImage(rsn_image_filename, x, y-18, width=barcode_width, height=barcode_height+12)
+            pdf.drawString(x-35, y+25, f"RSN:")
+            #pdf.drawString(x-30, y+15, f"{no}")
+
+
+            macid = Code128(val2[i], writer=ImageWriter())
+            macid_image = macid.render(writer_options={'module_width': 2.8, 'module_height': 80, "font_size": 20*5, "text_distance": 40, "quite_zone": 10})
+            macid_image_filename = (f"./bufferDEL/macid_barcode{i}.png")
+            macid_image.save(macid_image_filename)
+            pdf.drawImage(macid_image_filename, x1, y1-18, width=barcode_width, height=barcode_height+12)   
+            pdf.drawString(x2+311, y2-130, f"MAC ID: ")
+            
+            
+
+
+
+
+
+
+
+            # Remove the barcode image file
+            os.remove(rsn_image_filename)
+            os.remove(macid_image_filename)
+
+            # Increment the barcode count
+            barcode_count += 1
+
+            # Check if a new page is needed
+            if barcode_count == barcode_per_page:
+                # Reset parameters for new page
+                page_count += 1
+                barcode_count = 0
+
+                # Show the current page
+                pdf.showPage()
+
+
+
+
+            print_progress_bar(i+1, start_time, no_of_barcode)
+            #no = no+1
+            i = i + 1 
+        # Save the PDF
+        print()
+        print(f"File save at : Cartion_Box_Sticker_pdf/Box{ctnno}.pdf")
+        pdf.save()
+
+    def readEXCELnValidate():
+
+        df = pd.read_excel(location)  # You would use the actual path to your Excel file
+
+        # Extract the data for all boxes once
+        extracted_data = extract_sn_mac(df)
+
+        # Extract box numbers and convert them to integers for proper numeric sorting
+        box_numbers = [int(''.join(filter(str.isdigit, box))) for box in extracted_data.keys()]
+
+        # Now sort the box numbers in numeric order
+        sorted_box_numbers = sorted(box_numbers)
+        total_boxes = max(sorted_box_numbers)
+
+        try:
+            for box_number in sorted_box_numbers:
+                # Convert back to the original box format if needed, or directly use box_number if applicable
+                box_key = f"{searchValue}{box_number}"  # Adjust format as necessary based on how your keys are structured
+                if box_number >= startFrom:
+                    print(f"{searchValue}{box_number}")
+                    boxStickers(extracted_data[f"{searchValue}{box_number}"], str(box_number), total_boxes)
+        except KeyError as ke:
+            print()
+            print(f"{RED}Data not formatted properly. Please format data as below :-{NO_COLOR}")
+            print(f"\n{RED}Value mismatch at {ke} {NO_COLOR}")
+            print()
+            exampleData = f"""{YELLOW}EXAMPLE DATA:-
+
+                    |******> For BOX 1 <******|
+
+            +-------+-----------------+-------------------+
+            | BOX 1 |                 |                   |
+            +-------+-----------------+-------------------+
+            |  No.  | RSN             | MAC               |
+            +-------+-----------------+-------------------+
+            |   1   | RCRODBK01290308 | 44:B5:9C:00:48:C8 |
+            |   2   | RCRODBK01290336 | 44:B5:9C:00:49:00 |
+            |   3   | RCRODBK01290334 | 44:B5:9C:00:48:FC |
+            |   4   | RCRODBK01290328 | 44:B5:9C:00:48:F0 |
+            |   5   | RCRODBK01290312 | 44:B5:9C:00:48:D0 |
+            +-------+-----------------+-------------------+{NO_COLOR}"""
+
+            print(exampleData)   
+            print()
+
+
+    # Load the entire workbook once, instead of in the loop
+    location = chooseFile("./boxData/")
+    # MODEL DATASET
+    # location = 'MODEL_carton_jio300_7feb24.xlsx'
+
+    print()
+        
+
+    startFrom = int(input("Enter Box no. to start with : "))  # Assuming we are starting from box 1 for the sake of demonstration
+
+    searchValue = 'box'
+
+    readEXCELnValidate()
+
+
 
 
 
 
 
 def userInterface():
-    print("Enter 1 to create Router Body Stickers.")
-    print("Enter 2 to create Router BOX Stickers.")
-    print("Enter 3 to create Router Carton Stickers.")
-    choice = input("Enter Choice :")
 
-    if choice == 1:
-        router_body_stickers()
-    if choice == 2:
-        router_box_stickers()
-    if choice == 3:
-        # router_carton_stickers()
-        print("code not added yet")
+    try:
+        while True:
 
+            
+            print()
+            print("Enter 1 to create Router Body Stickers.")
+            print("Enter 2 to create Router BOX Stickers.")
+            print("Enter 3 to create Router Carton Stickers.")
+            print()
+            print("0 to EXIT")
+            print()
+            choice = int(input("Enter Choice : "))
+            print()
+            if choice == 1:
+                router_body_stickers()
+                continue
+
+            if choice == 2:
+                router_box_stickers()
+                continue
+
+            if choice == 3:
+                cartonStickers()
+                continue
+
+            if choice == 0:
+                break
+        
+    except KeyboardInterrupt:
+            print()
+            print_banner("Rage quite initiated!! Bye!")
+        
+    except Exception as e:
+            print("Falling apart with error :-\n")
+            print(e)
+
+userInterface()
