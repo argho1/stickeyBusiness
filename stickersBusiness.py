@@ -29,7 +29,7 @@ BRIGHT_BLUE='\033[1;34m'
 BRIGHT_YELLOW='\033[1;33m'
 
 # No Color
-NO_COLOR='\033[0m'  
+CEND='\033[0m'  
 
 
 
@@ -82,7 +82,8 @@ def chooseFile(folder_path):
             chosen_file = choose_file(files)
             print()
             print(f"\033[32mYou chose: {chosen_file}\033[0m\n")
-            return chosen_file    
+            #chosen_file_location = f"{folder_path}{chosen_file}"
+            return chosen_file#_location
 
     except KeyboardInterrupt:
         print("\nCTRL + C pressed, getting the duck outta here.\n")
@@ -121,7 +122,74 @@ def print_progress_bar(page, start_time, total_pages):
 
 def router_body_stickers():
     print()
-    eanno = "0796554198316"
+
+
+    def get_custom_input():
+        return {
+            "commodity_text": input("Enter Commodity: "),
+            "model_text": input("Enter Model: "),
+            "input_text": input("Enter Power Input: "),
+            "eanno": input("Enter EAN: ")
+        }
+    
+    def select_template(template_choice):
+        templates = {
+            # ODCP
+            '1': {
+                "commodity_text": "Outdoor Router",
+                "model_text": "Credo CR-3120-OD",
+                "input_text": "48V PoE",
+                "eanno": "0796554198316"
+                },
+            # CWAN
+            '2': {
+                "commodity_text": "CWAN",
+                "model_text": "CR3181-X",
+                "input_text": "AC 96~240V @ 47~63Hz",
+                "eanno": "not_available"
+                }
+        }
+        if template_choice in templates:
+            return templates[template_choice]
+        else:
+            return get_custom_input()
+    
+
+    while True:
+        print(f"{BRIGHT_YELLOW}\n<--## Choose TEMPLATES ##-->{CEND}")
+        print("1. ODCP")
+        print("2. CWAN")
+        print("HIT ENTER to add CUSTOM values!")
+        
+        template_choice = input("\nChoose a Template or HIT ENTER for custom: ")
+        if template_choice.strip() == "":
+            template_data = get_custom_input()
+        if template_choice in ['1','2']:
+            template_data = select_template(template_choice)
+        else:
+            print(f"{RED}Invalid Input!{CEND}")
+        
+        # At this point, template_data will either have the selected template's data
+        # or the custom data entered by the user.
+        commodity_text_print = template_data["commodity_text"]
+        model_text_print = template_data["model_text"]
+        input_text_print = template_data["input_text"]
+        eanno = template_data["eanno"]
+        
+        # Implement your logic here with the selected or entered template data
+        # For example, print what we've got:
+        print("\nYou've entered or selected:")
+        print(f"{GREEN}Commodity:\t{commodity_text_print}{CEND}")
+        print(f"{GREEN}Model:\t\t{model_text_print}{CEND}")
+        print(f"{GREEN}Input:\t\t{input_text_print}{CEND}")
+        print(f"{GREEN}EAN:\t\t{eanno}{CEND}")
+        
+        # Example of breaking the loop or continuing based on some condition
+        if input("\nDo you want to continue? (y/n): ").lower() != 'n':
+            break
+
+
+
 
     # Constants for positioning barcodes on the page
     x_start = 10 * mm  # Starting x position (20mm from the left margin)
@@ -132,7 +200,7 @@ def router_body_stickers():
     barcode_height = 16 * mm  # Reduced barcode height
 
 
-    chosen_excel_file = chooseFile("./")
+    chosen_excel_file = chooseFile("./data/")
 
 
     # Load the Excel file into a pandas DataFrame
@@ -142,15 +210,9 @@ def router_body_stickers():
 
     # Declearing comumn names as per excel sheet
     serial_number_columnName = 'SN'
-    wan_mac_columnName = 'WAN_MAC'
+    wan_mac_columnName = 'IMEI'
 
-    try:
-        # Select the columns by name
-        serial_number_list = df[serial_number_columnName].tolist()
-        wan_mac_list = df[wan_mac_columnName].tolist()
-    except KeyError as ke:
-        print("\033[31mColumns are not properly named.\033[0m")
-        exampleData="""\033[33m
+    exampleData="""\033[33m
         EXAMPLE DATA:-
 
         +----------------+-------------------+
@@ -162,22 +224,18 @@ def router_body_stickers():
         | RCRODBK01290004| 44:B5:9C:00:46:59 |
         +----------------+-------------------+\033[0m"""
 
-
+    try:
+        # Select the columns by name
+        serial_number_list = df[serial_number_columnName].tolist()
+        barcodes = serial_number_list
+        wan_mac_list = df[wan_mac_columnName].tolist()
+    except KeyError as ke:
+        print("\033[31mColumns are not properly named.\033[0m")
         print()
         print("\033[33mPlease have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like example below.\033[0m")
         print(exampleData)
         return
 
-
-
-
-    # count
-    #i = 1
-    # Usage example
-    commodity_text_print = "Commodity: Outdoor Router"
-    model_text_print = "Model: Credo CR-3120-OD"
-    input_text_print = "Input: 48V PoE"
-    barcodes = serial_number_list
 
 
 
@@ -188,17 +246,6 @@ def router_body_stickers():
         print("\x1b[31mValue missing or MAC vs Serial Number count mismatch!!\x1b[0m")
         print("\x1b[31mPlease Check Excel Sheet and Try Again!!\x1b[0m")
         print("\033[31mColumns are not properly named.\033[0m")
-        exampleData="""\033[33m
-        EXAMPLE DATA:-
-
-        +----------------+-------------------+
-        | SN             | WAN_MAC           |
-        +----------------+-------------------+
-        | RCRODBK01290001| 44:B5:9C:00:46:53 |
-        | RCRODBK01290002| 44:B5:9C:00:46:55 |
-        | RCRODBK01290003| 44:B5:9C:00:46:57 |
-        | RCRODBK01290004| 44:B5:9C:00:46:59 |
-        +----------------+-------------------+\033[0m"""
         print()
         print("\033[33mPlease have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like example below.\033[0m")
         print(exampleData)
@@ -255,31 +302,31 @@ def router_body_stickers():
 
                     # Add the data as text inside the sticker
                     c.setFillColor(colors.black)
-                    c.drawString(text_x, text_y, commodity_text_print)
-                    c.drawString(text_x, text_y - 15, model_text_print)
-                    c.drawString(text_x, text_y - 30, input_text_print)
+                    c.drawString(text_x, text_y, f"Commodity : {commodity_text_print}")
+                    c.drawString(text_x, text_y - 15, f"Model : {model_text_print}")
+                    c.drawString(text_x, text_y - 30, f"Input : {input_text_print}")
 
                     c.setFont("Helvetica-Bold", 7)
 
                     # Generate and add barcode below input_text_print
                     barcode_x = sticker_x + 50
                     barcode_y = sticker_y + sticker_height - 80
-                    sn = Code128(serial_number_list[barcode_idx], writer=ImageWriter())
+                    sn = Code128(str(serial_number_list[barcode_idx]), writer=ImageWriter())
                     sn_image = sn.render(writer_options={'module_width': 2.8, 'module_height': 80, "font_size": 20*4, "text_distance": 30, "quite_zone": 10})
                     sn_image_filename = f"./bufferDEL/SN_barcode_{serial_number_list[barcode_idx]}.png"
                     sn_image.save(sn_image_filename)
                     #barcode_x for - to move left barecode_y to - to move down
                     c.drawImage(sn_image_filename, barcode_x-25, barcode_y-15, width=150, height=45)
-                    c.drawString(barcode_x-45, barcode_y+15, f'RSN:')
+                    c.drawString(barcode_x-45, barcode_y+15, f'{serial_number_columnName}:')
                     c.drawString(barcode_x-44, barcode_y+8, f'{i}')
                     
-                    macid = Code128(wan_mac_list[barcode_idx], writer=ImageWriter())
+                    macid = Code128(str(wan_mac_list[barcode_idx]), writer=ImageWriter())
                     macid_image = macid.render(writer_options={'module_width': 2, 'module_height': 80, "font_size": 20*4, "text_distance": 30})
                     macid_image_filename = f"./bufferDEL/WanMac_barcode_{wan_mac_list[barcode_idx]}.png"
                     macid_image.save(macid_image_filename)
                     # barcode_x for - to move left barecode_y to - to move down
                     c.drawImage(macid_image_filename, barcode_x-25, barcode_y-55, width=150, height=45)
-                    c.drawString(barcode_x-45, barcode_y-25, 'MAC:')
+                    c.drawString(barcode_x-45, barcode_y-25, f'{wan_mac_columnName}:')
 
                     ean = Code128(eanno, writer=ImageWriter())
                     ean_image = ean.render(writer_options={'module_width': 3, 'module_height': 80, "font_size": 20*4, "text_distance": 30})
@@ -464,10 +511,10 @@ def router_box_stickers():
     barcode_width = 90 * mm  # Barcode width
     barcode_height = 16 * mm  # Reduced barcode height
 
-
+    location = chooseFile("./")
     # Load the Excel file into a pandas DataFrame
     # Make sure to replace 'your_excel_file.xlsx' with the actual path to your Excel file
-    df = pd.read_excel('modified_file.xlsx', engine='openpyxl')  # Ensure you have 'openpyxl' installed for .xlsx files
+    df = pd.read_excel(location, engine='openpyxl')  # Ensure you have 'openpyxl' installed for .xlsx files
 
     # Assuming the column names you want to select are 'ColumnName1' and 'ColumnName2'
     # Replace these with the actual column names from your Excel file
@@ -495,8 +542,8 @@ def router_box_stickers():
 
 
 
-    print("Please have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like exaple below.")
-    print(exampleData)
+        print("Please have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like exaple below.")
+        print(exampleData)
 
     no_of_barcode = len(sn_list)
 
@@ -526,33 +573,6 @@ def router_box_stickers():
     #ESN no.
     eanno =("0796554198316")
     print()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -821,8 +841,8 @@ def cartonStickers():
                     boxStickers(extracted_data[f"{searchValue}{box_number}"], str(box_number), total_boxes)
         except KeyError as ke:
             print()
-            print(f"{RED}Data not formatted properly. Please format data as below :-{NO_COLOR}")
-            print(f"\n{RED}Value mismatch at {ke} {NO_COLOR}")
+            print(f"{RED}Data not formatted properly. Please format data as below :-{CEND}")
+            print(f"\n{RED}Value mismatch at {ke} {CEND}")
             print()
             exampleData = f"""{YELLOW}EXAMPLE DATA:-
 
@@ -838,7 +858,7 @@ def cartonStickers():
             |   3   | RCRODBK01290334 | 44:B5:9C:00:48:FC |
             |   4   | RCRODBK01290328 | 44:B5:9C:00:48:F0 |
             |   5   | RCRODBK01290312 | 44:B5:9C:00:48:D0 |
-            +-------+-----------------+-------------------+{NO_COLOR}"""
+            +-------+-----------------+-------------------+{CEND}"""
 
             print(exampleData)   
             print()
@@ -898,8 +918,8 @@ def userInterface():
             print()
             print_banner("Rage quite initiated!! Bye!")
         
-    except Exception as e:
-            print("Falling apart with error :-\n")
-            print(e)
+    # except Exception as e:
+    #         print("Falling apart with error :-\n")
+    #         print(e)
 
 userInterface()
