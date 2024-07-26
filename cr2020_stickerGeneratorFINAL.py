@@ -7,14 +7,69 @@ from reportlab.pdfbase.pdfmetrics import stringWidth
 from barcode import Code128
 from barcode.writer import ImageWriter
 
+import datetime, os, sys
 
-# Load data from Excel
-excel_path = 'SN.xlsx'  # Adjust the path to your Excel file
-df = pd.read_excel(excel_path)
 
-# Create a PDF for output
-c = canvas.Canvas("stickers.pdf", pagesize=A4)
-width, height = A4  # width and height of the page
+# Utility Functions
+def print_banner(text):
+        length = len(text) + 4
+        line = '*' * length
+        print(line)
+        print(f'* {" " * (length - 4)} *')
+        print(f'* {text} *')
+        print(f'* {" " * (length - 4)} *')
+        print(line)
+
+
+
+def chooseFile(folder_path):
+    def choose_file(files):
+        while True:
+            try:
+                print("0. To go back to Main Menu.")
+                choice = int(input("Enter the number corresponding to the file you want to choose: "))
+                
+                if choice == 0:
+                    print_banner("Taking you back in time.")
+                    sys.exit(1)
+                if 1 <= choice <= len(files):
+                    return f'{folder_path}{files[choice - 1]}'
+                else:
+                    print("Invalid choice. Please enter a valid number.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
+
+    try:
+        # Filter files to include only Excel files
+        files = [file for file in os.listdir(folder_path) if file.endswith(('.xlsx', '.xls', '.xlsm'))]
+
+        print_banner(f"Available Excel files in {folder_path}:")
+        
+        for i, file in enumerate(files, 1):
+            file_path = os.path.join(folder_path, file)
+            # Get the modification timestamp and format it as a date
+            modified_date = datetime.datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
+            print(f"{i}. {file} - Last Modified: {modified_date})")
+        
+        print("\n")
+        # Select file
+
+        if not files:
+            print("The folder contains no Excel files.")
+            return None
+        else:
+            chosen_file = choose_file(files)
+            print()
+            print(f"\033[32mYou chose: {chosen_file}\033[0m\n")
+            #chosen_file_location = f"{folder_path}{chosen_file}"
+            return chosen_file#_location
+
+    except KeyboardInterrupt:
+        print("\nCTRL + C pressed, getting the duck outta here.\n")
+        sys.exit(1)
+
+
+
 
 def draw_text(c, x, y, text, font_size, font="Helvetica" ):
     c.setFont(font, font_size*2)
@@ -24,7 +79,7 @@ def draw_barcode(c, x, y, data, angle, scale=1.3):
     # Generate barcode
     barcode = Code128(data, writer=ImageWriter())
     barcode = barcode.render(writer_options={'module_width': 2.8, 'module_height': 80, "font_size": 22*4, "text_distance": 34, "quite_zone": 10})
-    barcode_path = f'barcode_{data}.png'
+    barcode_path = f'./bufferDEL/barcode_{data}.png'
     barcode.save(barcode_path)
 
     # Save the current graphics state
@@ -46,16 +101,27 @@ def draw_barcode(c, x, y, data, angle, scale=1.3):
 # Function to draw a sticker
 def draw_sticker(x, y, width, height, sn, imei, model_number):
 
-    scale_x = -15
-    scale_y = -7
-    # router_data = {
-    #     "title"   :  "Cellular Router",
-    #     'model'   : "Model : CR2020",
-    #     'power'   : 'Power : 9-36V / 1.5A',
-    #     'version' : 'Version : V2A-S230E',
-    #     "bands1"  : "Bands : LTE FDD(B1/B3/B5/B8)",
-    #     "bands2"  : "             LTE TDD(B34/B38/B39/B40/B41)"
-    # }
+
+    print(f"x : {x}, y : {y}")
+    
+    # STICKER FRAME
+    c.line(x, y, x, y + 40 * mm)  # Left border
+    c.line(x, y, x + 49 * mm, y)  # Button border
+    c.line(x, y + 40 * mm, x + 42 * mm, y + 40 * mm)  # Top border
+    c.line(x + 49 * mm, y , x + 49 * mm, y + 33 * mm)  # Right border
+    c.line(x + 49 * mm, y + 33 * mm , x + 42 * mm, y + 40 * mm)  # Right corner tilted border
+
+    #TOP LINE
+    c.line(x + 29, y + 88, x + width - 10, y + 88 )  # Top border
+
+    router_data = {
+        "title"   :  "Cellular Router",
+        'model'   : "Model : CR2020",
+        'power'   : 'Power : 9-36V / 1.5A',
+        'version' : 'Version : V2A-S230E',
+        "bands1"  : "Bands : LTE FDD(B1/B3/B5/B8)",
+        "bands2"  : "             LTE TDD(B34/B38/B39/B40/B41)"
+    }
 
     if imei == 0:
         imei = "N/A"
@@ -68,47 +134,59 @@ def draw_sticker(x, y, width, height, sn, imei, model_number):
         }
 
     #BARCODE
-    draw_barcode(c, x- 12, y+56, sn, -90)
+    draw_barcode(c, x + 2, y + 74, sn, -90)
 
     text1="CREDO "
     text2="NETWORKS"
     #HEAD
-    draw_text(c, x+35 + scale_x, y+73 + scale_y, text1, 8, font='Helvetica-Bold')
-    draw_text(c, x+35+60 + scale_x, y+73 + scale_y, text2, 8)
 
-    space = y-17
+    draw_text(c, x + 13 * mm, y + 33 * mm, text1, 4, font='Helvetica-Bold')
+    draw_text(c, x + 24 * mm, y + 33 * mm, text2, 4)
+
+    space = y - 2.5
     for key, value in router_data.items():
         if key == 'title':
-            draw_text(c, x+35 + scale_x, space+73 + scale_y, f"{value}", 5, font='Helvetica-Bold')
+            draw_text(c, x+35, space+73, f"{value}", 5, font='Helvetica-Bold')
             space = space - 10
         else:
-            draw_text(c, x+37 + scale_x , space+73 + scale_y, f"{value}", 4)
-            space = space - 11
+            draw_text(c, x+37, space+72 , f"{value}", 4)
+            space = space - 10
+
+    #BOTTOM LINE
+    c.line(x + 29 , y+30, x + width - 10 , y+30)  # Top border
+
 
     text="CREDO NETWORKS"
     #TAIL
-    draw_text(c, x+58 + scale_x, y+5 + scale_y, text, 5, font='Helvetica-Bold')
+    draw_text(c, x + 41.5 , y + 18 , text, 3.5, font='Helvetica-Bold')
     
 
 
 
     # Draw lines framing the sticker
-    #HEAD LINE
-    c.line(x+30 + scale_x, y+15 + scale_y, x + width, y+15 + scale_y)  # Top border
-    #TAIL LINE
-    c.line(x+30 + scale_x, y+70 + scale_y, x + width, y+70 + scale_y)  # Top border
+
+
+# Load data from Excel
+# excel_path = chooseFile("./data/")  # Adjust the path to your Excel file
+excel_path = "./data/SN.xlsx"
+df = pd.read_excel(excel_path)
+
+# Create a PDF for output
+c = canvas.Canvas("stickers.pdf", pagesize=A4)
+width, height = A4  # width and height of the page
 
 
 # Page and sticker dimensions in millimeters
 page_width, page_height = A4
-sticker_width, sticker_height = 63.2 * mm, 30 * mm
-margin = 10 * mm  # Margin on each side
+sticker_width, sticker_height = 49.2 * mm, 40 * mm
+margin = 15 * mm  # Margin on each side
+additional_space = 30 * mm  # Additional space between stickers
 
 # Adjusting the number of columns
 num_columns = 2
 
 # Check if the total width exceeds the page width
-total_width_needed = num_columns * (sticker_width + margin) + margin
+total_width_needed = num_columns * (sticker_width + margin + additional_space) + margin
 if total_width_needed > page_width:
     raise ValueError(f"Total width {total_width_needed/mm}mm exceeds page width {page_width/mm}mm. Reduce number of columns or sticker width.")
 
@@ -129,7 +207,7 @@ for index, row in df.iterrows():
     row_num = (index // stickers_per_row) % rows_per_page
     column = index % stickers_per_row
 
-    x = start_x + column * (sticker_width + margin)
+    x = start_x + column * (sticker_width + margin + additional_space)
     y = start_y - row_num * (sticker_height + 10 * mm)
 
     draw_sticker(x , y, sticker_width, sticker_height, sn, imei, model_number)
@@ -139,5 +217,32 @@ for index, row in df.iterrows():
         c.showPage()
         start_y = page_height - margin - sticker_height  # Reset y position
 
+
+# A4 dimensions in points
+width, height = A4
+
+# Function to draw mm marks
+def draw_mm_marks():
+    # Draw horizontal marks
+    for x in range(0, int(width / mm)):
+        c.line(x * mm, 0, x * mm, 5 * mm)  # Bottom marks
+        c.line(x * mm, height, x * mm, height - 5 * mm)  # Top marks
+        if x % 10 == 0:  # Add text label every 10 mm
+            c.drawString(x * mm + 2, 8, str(x))
+            c.drawString(x * mm + 2, height - 12, str(x))
+    
+    # Draw vertical marks
+    for y in range(0, int(height / mm)):
+        c.line(0, y * mm, 5 * mm, y * mm)  # Left marks
+        c.line(width, y * mm, width - 5 * mm, y * mm)  # Right marks
+        if y % 10 == 0:  # Add text label every 10 mm
+            c.drawString(8, y * mm + 2, str(y))
+            c.drawString(width - 20, y * mm + 2, str(y))
+
+# Draw mm marks on the canvas
+draw_mm_marks()
+
 # Save the PDF
 c.save()
+
+
