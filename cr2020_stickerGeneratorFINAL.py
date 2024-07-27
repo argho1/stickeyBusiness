@@ -75,7 +75,7 @@ def draw_text(c, x, y, text, font_size, font="Helvetica" ):
     c.setFont(font, font_size*2)
     c.drawString(x, y, text) 
 
-def draw_barcode(c, x, y, data, angle, scale=1.3):
+def draw_barcode(c, x, y, data, angle, scale=1.6):
     # Generate barcode
     barcode = Code128(data, writer=ImageWriter())
     barcode = barcode.render(writer_options={'module_width': 2.8, 'module_height': 80, "font_size": 22*4, "text_distance": 34, "quite_zone": 10})
@@ -100,19 +100,20 @@ def draw_barcode(c, x, y, data, angle, scale=1.3):
 
 # Function to draw a sticker
 def draw_sticker(x, y, width, height, sn, imei, model_number):
-
-
-    print(f"x : {x}, y : {y}")
     
     # STICKER FRAME
-    c.line(x, y, x, y + 40 * mm)  # Left border
-    c.line(x, y, x + 49 * mm, y)  # Button border
-    c.line(x, y + 40 * mm, x + 42 * mm, y + 40 * mm)  # Top border
-    c.line(x + 49 * mm, y , x + 49 * mm, y + 33 * mm)  # Right border
-    c.line(x + 49 * mm, y + 33 * mm , x + 42 * mm, y + 40 * mm)  # Right corner tilted border
+    c.line(x, y, x, y + 40 * mm + 3.5 * mm)  # Left border
+    
+    c.line(x, y, x + 49 * mm + 5.5 * mm, y)  # Button border
+    
+    c.line(x, y + 40 * mm + 3.5 * mm, x + 42 * mm + 5 * mm, y + 40 * mm + 3.5 * mm)  # Top border
+    
+    c.line(x + 49 * mm + 5.5 * mm, y , x + 49 * mm + 5.5 * mm, y + 33 * mm + 2.5 * mm)  # Right border
+    
+    c.line(x + 49 * mm + 5.6 * mm, y + 33 * mm + 2.3 * mm, x + 42 * mm + 5 * mm, y + 40 * mm + 3.5 * mm)  # Right corner tilted border
 
     #TOP LINE
-    c.line(x + 29, y + 88, x + width - 10, y + 88 )  # Top border
+    c.line(x + 36, y + 88, x + width - 10, y + 88 )  # Top border
 
     router_data = {
         "title"   :  "Cellular Router",
@@ -134,31 +135,31 @@ def draw_sticker(x, y, width, height, sn, imei, model_number):
         }
 
     #BARCODE
-    draw_barcode(c, x + 2, y + 74, sn, -90)
+    draw_barcode(c, x + 1, y + 83, sn, -90)
 
     text1="CREDO "
     text2="NETWORKS"
     #HEAD
 
-    draw_text(c, x + 13 * mm, y + 33 * mm, text1, 4, font='Helvetica-Bold')
-    draw_text(c, x + 24 * mm, y + 33 * mm, text2, 4)
+    draw_text(c, x + 14 * mm, y + 33 * mm, text1, 4.5, font='Helvetica-Bold')
+    draw_text(c, x + 26 * mm, y + 33 * mm, text2, 4.5)
 
-    space = y - 2.5
+    space = y - 3
     for key, value in router_data.items():
         if key == 'title':
-            draw_text(c, x+35, space+73, f"{value}", 5, font='Helvetica-Bold')
+            draw_text(c, x+37, space+76, f"{value}", 5, font='Helvetica-Bold')
             space = space - 10
         else:
-            draw_text(c, x+37, space+72 , f"{value}", 4)
+            draw_text(c, x+39, space+72 , f"{value}", 4)
             space = space - 10
 
     #BOTTOM LINE
-    c.line(x + 29 , y+30, x + width - 10 , y+30)  # Top border
+    c.line(x + 36 , y + 30, x + width - 10, y+30)  # Top border
 
 
     text="CREDO NETWORKS"
     #TAIL
-    draw_text(c, x + 41.5 , y + 18 , text, 3.5, font='Helvetica-Bold')
+    draw_text(c, x + 41.5 , y + 18 , text, 4, font='Helvetica-Bold')
     
 
 
@@ -208,7 +209,7 @@ for index, row in df.iterrows():
     column = index % stickers_per_row
 
     x = start_x + column * (sticker_width + margin + additional_space)
-    y = start_y - row_num * (sticker_height + 10 * mm)
+    y = start_y - row_num * (sticker_height + 15 * mm)
 
     draw_sticker(x , y, sticker_width, sticker_height, sn, imei, model_number)
 
@@ -221,26 +222,26 @@ for index, row in df.iterrows():
 # A4 dimensions in points
 width, height = A4
 
-# Function to draw mm marks
-def draw_mm_marks():
-    # Draw horizontal marks
-    for x in range(0, int(width / mm)):
-        c.line(x * mm, 0, x * mm, 5 * mm)  # Bottom marks
-        c.line(x * mm, height, x * mm, height - 5 * mm)  # Top marks
-        if x % 10 == 0:  # Add text label every 10 mm
-            c.drawString(x * mm + 2, 8, str(x))
-            c.drawString(x * mm + 2, height - 12, str(x))
+# # Function to draw mm marks
+# def draw_mm_marks():
+#     # Draw horizontal marks
+#     for x in range(0, int(width / mm)):
+#         c.line(x * mm, 0, x * mm, 5 * mm)  # Bottom marks
+#         c.line(x * mm, height, x * mm, height - 5 * mm)  # Top marks
+#         if x % 10 == 0:  # Add text label every 10 mm
+#             c.drawString(x * mm + 2, 8, str(x))
+#             c.drawString(x * mm + 2, height - 12, str(x))
     
-    # Draw vertical marks
-    for y in range(0, int(height / mm)):
-        c.line(0, y * mm, 5 * mm, y * mm)  # Left marks
-        c.line(width, y * mm, width - 5 * mm, y * mm)  # Right marks
-        if y % 10 == 0:  # Add text label every 10 mm
-            c.drawString(8, y * mm + 2, str(y))
-            c.drawString(width - 20, y * mm + 2, str(y))
+#     # Draw vertical marks
+#     for y in range(0, int(height / mm)):
+#         c.line(0, y * mm, 5 * mm, y * mm)  # Left marks
+#         c.line(width, y * mm, width - 5 * mm, y * mm)  # Right marks
+#         if y % 10 == 0:  # Add text label every 10 mm
+#             c.drawString(8, y * mm + 2, str(y))
+#             c.drawString(width - 20, y * mm + 2, str(y))
 
-# Draw mm marks on the canvas
-draw_mm_marks()
+# # Draw mm marks on the canvas
+# draw_mm_marks()
 
 # Save the PDF
 c.save()
