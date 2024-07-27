@@ -124,9 +124,6 @@ def draw_sticker(x, y, width, height, sn, imei, model_number):
         "bands2"  : "             LTE TDD(B34/B38/B39/B40/B41)"
     }
 
-    if imei == 0:
-        imei = "N/A"
-
     router_data = {
         "title"   :  "cWAN",
         'model'   : f"Model : {model_number}",
@@ -171,12 +168,13 @@ def draw_sticker(x, y, width, height, sn, imei, model_number):
 # excel_path = chooseFile("./data/")  # Adjust the path to your Excel file
 excel_path = "./data/SN.xlsx"
 df = pd.read_excel(excel_path)
+df['IMEI'] = df['IMEI'].apply(lambda x: 'N/A' if pd.isna(x) or x == '' or x == 'nan' else int(x))
 
 # Create a PDF for output
 c = canvas.Canvas("stickers.pdf", pagesize=A4)
 width, height = A4  # width and height of the page
 
-
+print(df)
 # Page and sticker dimensions in millimeters
 page_width, page_height = A4
 sticker_width, sticker_height = 49.2 * mm, 40 * mm
@@ -202,9 +200,10 @@ start_y = page_height - margin - sticker_height
 # Iterate over rows in the DataFrame
 for index, row in df.iterrows():
     sn = row['SN']
-    imei = int(row['IMEI'])
+    
+    imei = row['IMEI']
     model_number = row['Model']
-    print(sn, " ", imei)
+    # print(sn, " ", imei)
     row_num = (index // stickers_per_row) % rows_per_page
     column = index % stickers_per_row
 
