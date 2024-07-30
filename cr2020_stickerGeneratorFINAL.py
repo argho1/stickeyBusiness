@@ -124,12 +124,12 @@ def draw_sticker(x, y, width, height, sn, imei, model_number):
         "bands2"  : "             LTE TDD(B34/B38/B39/B40/B41)"
     }
 
-    router_data = {
-        "title"   :  "cWAN",
-        'model'   : f"Model : {model_number}",
-        'power'   : 'Power : 12V / 1A',
-        "imei"    : f"IMEI : {imei}",
-        }
+    # router_data = {
+    #     "title"   :  "cWAN",
+    #     'model'   : f"Model : {model_number}",
+    #     'power'   : 'Power : 12V / 1A',
+    #     "imei"    : f"IMEI : {imei}",
+    #     }
 
     if len(router_data) == 4:
         font = 3
@@ -138,9 +138,10 @@ def draw_sticker(x, y, width, height, sn, imei, model_number):
         space = 0
     
     elif len(router_data) == 6 :
-        font = 0
-        align_x = 0
-
+        font = 3
+        align_x = x + 14 * mm # 14 default
+        align_y = y + 30 * mm # 26 default
+        space = 0
 
     #TOP LINE
     c.line(align_x - 1.5 * mm, align_y + 5 * mm, x + width - 10, align_y + 5 * mm )  # Top border
@@ -165,12 +166,12 @@ def draw_sticker(x, y, width, height, sn, imei, model_number):
             space = space - 10
 
     #BOTTOM LINE
-    c.line(align_x - 1.5 * mm , align_y - 15 * mm, x + width - 10, align_y - 15 * mm)  # Top border
-
+    c.line(align_x - 1.5 * mm , align_y + space , x + width - 10, align_y + space )  # Top border
+    space = space - 10
 
     text="CREDO NETWORKS"
     #TAIL
-    draw_text(c,align_x + 1 * mm , align_y - 19 * mm , text, font + 1                                                                                                                                                                                                        , font='Helvetica-Bold')
+    draw_text(c,align_x + 1 * mm , align_y + space , text, font + 1                                                                                                                                                                                                        , font='Helvetica-Bold')
     
 
 
