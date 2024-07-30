@@ -121,7 +121,7 @@ def draw_sticker(x, y, width, height, sn, imei, model_number):
         'power'   : 'Power : 9-36V / 1.5A',
         'version' : 'Version : V2A-S230E',
         "bands1"  : "Bands : LTE FDD(B1/B3/B5/B8)",
-        "bands2"  : "             LTE TDD(B34/B38/B39/B40/B41)"
+        "bands2"  : "           LTE TDD(B34/B38/B39/B40/B41)"
     }
 
     # router_data = {
@@ -159,7 +159,7 @@ def draw_sticker(x, y, width, height, sn, imei, model_number):
             draw_text(c, align_x, space + align_y, f"{value}", font + 2 , font='Helvetica-Bold')
             space = space - 10
         elif key in ['bands1','bands2']:
-            draw_text(c, align_x + 2, space + align_y - 1.55 * mm, f"{value}", font - 1, font='Helvetica-Bold')
+            draw_text(c, align_x + 2, space + align_y - 1.55 * mm, f"{value}", font, font='Helvetica-Bold')
             space = space - 10
         else:
             draw_text(c, align_x + 2, space + align_y - 1.55 * mm , f"{value}", font + 1)
