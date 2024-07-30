@@ -240,7 +240,7 @@ def router_body_stickers():
             shutil.rmtree(directory)
             sys.exit(1)
 
-    def margined_body_sticker():
+    def margined_body_sticker(model):
 
         def draw_text(c, x, y, text, font_size, font="Helvetica" ):
             c.setFont(font, font_size*2)
@@ -287,21 +287,23 @@ def router_body_stickers():
             #BARCODE
             draw_barcode(c, x + 1, y + 83, sn, -90)
 
-            router_data = {
-                "title"   : "Cellular Router",
-                'model'   : "Model : CR2020",
-                'power'   : 'Power : 9-36V / 1.5A',
-                'version' : 'Version : V2A-S230E',
-                "bands1"  : "Bands : LTE FDD(B1/B3/B5/B8)",
-                "bands2"  : "       LTE TDD(B34/B38/B39/B40/B41)"
-            }
-
-            router_data = {
-                "title"   :  "cWAN",
-                'model'   : f"Model : {model_number}",
-                'power'   : 'Power : 12V / 1A',
-                "imei"    : f"IMEI : {imei}",
+            if model == 'cr2020':
+                router_data = {
+                    "title"   : "Cellular Router",
+                    'model'   : "Model : CR2020",
+                    'power'   : 'Power : 9-36V / 1.5A',
+                    'version' : 'Version : V2A-S230E',
+                    "bands1"  : "Bands : LTE FDD(B1/B3/B5/B8)",
+                    "bands2"  : "       LTE TDD(B34/B38/B39/B40/B41)"
                 }
+            if model == 'cwanbb':
+                router_data = {
+                    "title"   :  "cWAN",
+                    'model'   : f"Model : {model_number}",
+                    'power'   : 'Power : 12V / 1A',
+                    "imei"    : f"IMEI : {imei}",
+                    }
+
 
             if len(router_data) == 4:
                 font = 3
@@ -571,8 +573,11 @@ def router_body_stickers():
         print(f"Sticker PDF created: {pdf_path}")
 
 
-    if template_choice in ['3','4']:
-        margined_body_sticker()
+    if template_choice == '3':
+        margined_body_sticker('cr2020')
+    
+    if template_choice == '4':
+        margined_body_sticker('cwanbb')
 
 
 
