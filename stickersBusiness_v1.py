@@ -123,7 +123,7 @@ def print_progress_bar(page, start_time, total_pages):
 def router_body_stickers():
     print()
 
-        #code to make stickrs pdf
+    #code to make stickrs pdf
     def create_stickers(selected_template, barcodes):
 
         commodity_text_print = selected_template['commodity_text']
@@ -240,8 +240,178 @@ def router_body_stickers():
             shutil.rmtree(directory)
             sys.exit(1)
 
+    def margined_body_sticker():
+
+        def draw_text(c, x, y, text, font_size, font="Helvetica" ):
+            c.setFont(font, font_size*2)
+            c.drawString(x, y, text) 
+
+        def draw_barcode(c, x, y, data, angle, scale=1.6):
+            # Generate barcode
+            barcode = Code128(data, writer=ImageWriter())
+            barcode = barcode.render(writer_options={'module_width': 2.8, 'module_height': 80, "font_size": 22*4, "text_distance": 34, "quite_zone": 10})
+            barcode_path = f'./bufferDEL/barcode_{data}.png'
+            barcode.save(barcode_path)
+
+            # Save the current graphics state
+            c.saveState()
+            # Move the origin to the point where the image will be placed
+            # Then rotate around this new origin
+            c.translate(x, y)
+            c.rotate(angle)
+
+            # Draw the barcode image on the canvas
+            # Scaling the dimensions to adjust the size of the barcode
+            barcode_width = 20 * scale  # Scale width
+            barcode_height = 67 * scale  # Scale height
+            c.drawImage(barcode_path, -barcode_width, 0, barcode_height, barcode_width)
+
+            # Restore the graphics state to avoid affecting other drawings
+            c.restoreState()
+
+            # Function to draw a sticker
+        
+        def draw_sticker(c, x, y, width, height, sn, imei, model_number):
+            
+            # STICKER FRAME
+            c.line(x, y, x, y + 40 * mm + 3.5 * mm)  # Left border
+            
+            c.line(x, y, x + 49 * mm + 5.5 * mm, y)  # Button border
+            
+            c.line(x, y + 40 * mm + 3.5 * mm, x + 42 * mm + 5 * mm, y + 40 * mm + 3.5 * mm)  # Top border
+            
+            c.line(x + 49 * mm + 5.5 * mm, y , x + 49 * mm + 5.5 * mm, y + 33 * mm + 2.5 * mm)  # Right border
+            
+            c.line(x + 49 * mm + 5.6 * mm, y + 33 * mm + 2.3 * mm, x + 42 * mm + 5 * mm, y + 40 * mm + 3.5 * mm)  # Right corner tilted border
+
+            #BARCODE
+            draw_barcode(c, x + 1, y + 83, sn, -90)
+
+            router_data = {
+                "title"   : "Cellular Router",
+                'model'   : "Model : CR2020",
+                'power'   : 'Power : 9-36V / 1.5A',
+                'version' : 'Version : V2A-S230E',
+                "bands1"  : "Bands : LTE FDD(B1/B3/B5/B8)",
+                "bands2"  : "       LTE TDD(B34/B38/B39/B40/B41)"
+            }
+
+            router_data = {
+                "title"   :  "cWAN",
+                'model'   : f"Model : {model_number}",
+                'power'   : 'Power : 12V / 1A',
+                "imei"    : f"IMEI : {imei}",
+                }
+
+            if len(router_data) == 4:
+                font = 3
+                align_x = x + 14 * mm # 14 default
+                align_y = y + 26 * mm # 26 default
+                space = 0
+            
+            elif len(router_data) == 6 :
+                font = 3
+                align_x = x + 14 * mm # 14 default
+                align_y = y + 30 * mm # 26 default
+                space = 0
+
+            #TOP LINE
+            c.line(align_x - 1.5 * mm, align_y + 5 * mm, x + width - 10, align_y + 5 * mm )  # Top border
+
+            #HEAD
+            text1="CREDO "
+            text2="NETWORKS"
+            head_font_size = font + 1.5
+            draw_text(c, align_x, align_y + 7 * mm, text1, head_font_size, font='Helvetica-Bold')
+            draw_text(c, align_x + 12 * mm, align_y + 7 * mm, text2, head_font_size)
+
+            
+            for key, value in router_data.items():
+                if key == 'title':
+                    draw_text(c, align_x, space + align_y, f"{value}", font + 2 , font='Helvetica-Bold')
+                    space = space - 10
+                elif key in ['bands1','bands2']:
+                    draw_text(c, align_x + 2, space + align_y - 1.55 * mm, f"{value}", font, font='Helvetica-Bold')
+                    space = space - 10
+                else:
+                    draw_text(c, align_x + 2, space + align_y - 1.55 * mm , f"{value}", font + 1)
+                    space = space - 10
+
+            #BOTTOM LINE
+            c.line(align_x - 1.5 * mm , align_y + space , x + width - 10, align_y + space )  # Top border
+            space = space - 10
+
+            text="CREDO NETWORKS"
+            #TAIL
+            draw_text(c,align_x + 1 * mm , align_y + space , text, font + 1                                                                                                                                                                                                        , font='Helvetica-Bold')
+            
 
 
+
+            # Draw lines framing the sticker
+
+
+
+
+        # Load data from Excel
+        # excel_path = chooseFile("./data/")  # Adjust the path to your Excel file
+        excel_path = "./data/SN.xlsx"
+        df = pd.read_excel(excel_path)
+        df['IMEI'] = df['IMEI'].apply(lambda x: 'N/A' if pd.isna(x) or x == '' or x == 'nan' else int(x))
+
+        # Create a PDF for output
+        c = canvas.Canvas("stickers.pdf", pagesize=A4)
+        width, height = A4  # width and height of the page
+
+        print(df)
+        # Page and sticker dimensions in millimeters
+        page_width, page_height = A4
+        sticker_width, sticker_height = 49.2 * mm, 40 * mm
+        margin = 15 * mm  # Margin on each side
+        additional_space = 30 * mm  # Additional space between stickers
+
+        # Adjusting the number of columns
+        num_columns = 2
+
+        # Check if the total width exceeds the page width
+        total_width_needed = num_columns * (sticker_width + margin + additional_space) + margin
+        if total_width_needed > page_width:
+            raise ValueError(f"Total width {total_width_needed/mm}mm exceeds page width {page_width/mm}mm. Reduce number of columns or sticker width.")
+
+        # Calculate the number of stickers per row and number of rows
+        stickers_per_row = num_columns  # same as the number of columns
+        rows_per_page = int((page_height - 2 * margin) / (sticker_height + 10 * mm))
+
+        # Define starting positions
+        start_x = margin + 20
+        start_y = page_height - margin - sticker_height
+
+        # Iterate over rows in the DataFrame
+        for index, row in df.iterrows():
+            sn = row['SN']
+            
+            imei = row['IMEI']
+            model_number = row['Model']
+            # print(sn, " ", imei)
+            row_num = (index // stickers_per_row) % rows_per_page
+            column = index % stickers_per_row
+
+            x = start_x + column * (sticker_width + margin + additional_space)
+            y = start_y - row_num * (sticker_height + 15 * mm)
+
+            draw_sticker(c, x , y, sticker_width, sticker_height, sn, imei, model_number)
+
+            # Check if we need a new page
+            if (index + 1) % (stickers_per_row * rows_per_page) == 0:
+                c.showPage()
+                start_y = page_height - margin - sticker_height  # Reset y position
+
+
+        # A4 dimensions in points
+        width, height = A4
+
+
+        c.save()
 
 
     def validateExcel(chosen_excel_file, EXCEL_COLUMN_1_NAME, EXCEL_COLUMN_2_NAME):
@@ -290,7 +460,6 @@ def router_body_stickers():
             return
         
 
-
     def get_custom_input(selected_template):
 
         # print_banner("here")
@@ -304,6 +473,7 @@ def router_body_stickers():
 
         return 
     
+
     def select_template(template_choice):
         templates = {
             # ODCP
@@ -379,18 +549,6 @@ def router_body_stickers():
                 break
 
 
-
-    # # Constants for positioning barcodes on the page
-    # x_start = 10 * mm  # Starting x position (20mm from the left margin)
-    # y_start = 235 * mm  # Starting y position (280mm from the bottom margin)
-    # x_increment = 0  # No horizontal spacing between barcodes in a row
-    # y_increment = 18 * mm  # Vertical spacing between barcodes (adjusted to make them closer)
-    # barcode_width = 90 * mm  # Barcode width
-    # barcode_height = 16 * mm  # Reduced barcode height
-
-
-
-
     #directory to store barcode, deleted when program done or when ctrl+c presses
     directory = "./bufferDEL"
 
@@ -407,11 +565,16 @@ def router_body_stickers():
 
 
 
+    if template_choice in ['1','2']:
+        pdf_path = create_stickers(selected_template, serial_number_list)
+        print()
+        print(f"Sticker PDF created: {pdf_path}")
 
-    pdf_path = create_stickers(selected_template, serial_number_list)
 
-    print()
-    print(f"Sticker PDF created: {pdf_path}")
+    if template_choice in ['3','4']:
+        margined_body_sticker()
+
+
 
 
 def router_box_stickers():
