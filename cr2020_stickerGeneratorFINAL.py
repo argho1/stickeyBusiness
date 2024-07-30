@@ -112,11 +112,11 @@ def draw_sticker(x, y, width, height, sn, imei, model_number):
     
     c.line(x + 49 * mm + 5.6 * mm, y + 33 * mm + 2.3 * mm, x + 42 * mm + 5 * mm, y + 40 * mm + 3.5 * mm)  # Right corner tilted border
 
-    #TOP LINE
-    c.line(x + 36, y + 88, x + width - 10, y + 88 )  # Top border
+    #BARCODE
+    draw_barcode(c, x + 1, y + 83, sn, -90)
 
     router_data = {
-        "title"   :  "Cellular Router",
+        "title"   : "Cellular Router",
         'model'   : "Model : CR2020",
         'power'   : 'Power : 9-36V / 1.5A',
         'version' : 'Version : V2A-S230E',
@@ -131,32 +131,46 @@ def draw_sticker(x, y, width, height, sn, imei, model_number):
         "imei"    : f"IMEI : {imei}",
         }
 
-    #BARCODE
-    draw_barcode(c, x + 1, y + 83, sn, -90)
+    if len(router_data) == 4:
+        font = 3
+        align_x = x + 14 * mm # 14 default
+        align_y = y + 26 * mm # 26 default
+        space = 0
+    
+    elif len(router_data) == 6 :
+        font = 0
+        align_x = 0
 
+
+    #TOP LINE
+    c.line(align_x - 1.5 * mm, align_y + 5 * mm, x + width - 10, align_y + 5 * mm )  # Top border
+
+    #HEAD
     text1="CREDO "
     text2="NETWORKS"
-    #HEAD
+    head_font_size = font + 1.5
+    draw_text(c, align_x, align_y + 7 * mm, text1, head_font_size, font='Helvetica-Bold')
+    draw_text(c, align_x + 12 * mm, align_y + 7 * mm, text2, head_font_size)
 
-    draw_text(c, x + 14 * mm, y + 33 * mm, text1, 4.5, font='Helvetica-Bold')
-    draw_text(c, x + 26 * mm, y + 33 * mm, text2, 4.5)
-
-    space = y - 3
+    
     for key, value in router_data.items():
         if key == 'title':
-            draw_text(c, x+37, space+76, f"{value}", 5, font='Helvetica-Bold')
+            draw_text(c, align_x, space + align_y, f"{value}", font + 2 , font='Helvetica-Bold')
+            space = space - 10
+        elif key in ['bands1','bands2']:
+            draw_text(c, align_x + 2, space + align_y - 1.55 * mm, f"{value}", font - 1, font='Helvetica-Bold')
             space = space - 10
         else:
-            draw_text(c, x+39, space+72 , f"{value}", 4)
+            draw_text(c, align_x + 2, space + align_y - 1.55 * mm , f"{value}", font + 1)
             space = space - 10
 
     #BOTTOM LINE
-    c.line(x + 36 , y + 30, x + width - 10, y+30)  # Top border
+    c.line(align_x - 1.5 * mm , align_y - 15 * mm, x + width - 10, align_y - 15 * mm)  # Top border
 
 
     text="CREDO NETWORKS"
     #TAIL
-    draw_text(c, x + 41.5 , y + 18 , text, 4, font='Helvetica-Bold')
+    draw_text(c,align_x + 1 * mm , align_y - 19 * mm , text, font + 1                                                                                                                                                                                                        , font='Helvetica-Bold')
     
 
 
