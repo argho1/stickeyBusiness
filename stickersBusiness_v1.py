@@ -288,23 +288,35 @@ def router_body_stickers():
             #BARCODE
             draw_barcode(c, x + 1, y + 83, sn, -90)
 
-            if model == 'cr2020':
-                router_data = {
-                    "title"   : "Cellular Router",
-                    'model'   : "Model : CR2020",
-                    'power'   : 'Power : 9-36V / 1.5A',
-                    'version' : 'Version : V2A-S230E',
-                    "bands1"  : "Bands : LTE FDD(B1/B3/B5/B8)",
-                    "bands2"  : "       LTE TDD(B34/B38/B39/B40/B41)"
-                }
-            if model == 'cwanbb':
-                router_data = {
-                    "title"   :  "cWAN",
-                    'model'   : f"Model : {model_number}",
-                    'power'   : 'Power : 12V / 1A',
-                    "imei"    : f"IMEI : {imei}",
-                    }
+            router_data = {}
+            for key, value in selected_template.items():
+                if 'excel' not in value.strip().lower().replace(" ",""):
+                    if key == 'imei':
+                        router_data[key] = imei
+                    else:
+                        router_data[key] = value
+                
 
+
+            # if model == 'cr2020':
+            #     router_data = {
+            #         "title"   : "Cellular Router",
+            #         'model'   : "Model : CR2020",
+            #         'power'   : 'Power : 9-36V / 1.5A',
+            #         'version' : 'Version : V2A-S230E',
+            #         "bands1"  : "Bands : LTE FDD(B1/B3/B5/B8)",
+            #         "bands2"  : "       LTE TDD(B34/B38/B39/B40/B41)"
+            #     }
+            # if model == 'cwanbb':
+            #     router_data = {
+            #         "title"   :  "cWAN",
+            #         'model'   : f"Model : CR1112-A",
+            #         'power'   : 'Power : 12V / 1A',
+            #         "imei"    : f"IMEI : {imei}",
+            #         }
+
+            print(router_data)
+            print("\nRouter Data Len : ",len(router_data))
 
             if len(router_data) == 4:
                 font = 3
@@ -317,6 +329,9 @@ def router_body_stickers():
                 align_x = x + 14 * mm # 14 default
                 align_y = y + 30 * mm # 26 default
                 space = 0
+            
+            else:
+                print("Wrong size dictionary passed, improve code, call Argho lol!")
 
             #TOP LINE
             c.line(align_x - 1.5 * mm, align_y + 5 * mm, x + width - 10, align_y + 5 * mm )  # Top border
@@ -480,10 +495,11 @@ def router_body_stickers():
                 else:
                     edited_template[key] = userInput
             else:
+                edited_template[key] = value
                 print("Value taken from Excel : ",value)
 
         for key, value in edited_template.items():
-            print("")
+            print(value)
 
         return edited_template 
     
@@ -537,7 +553,7 @@ def router_body_stickers():
         
         template_choice = input("\nChoose a Template :")
         # if template_choice.strip() == "":
-        #     template_data = get_custom_input(select_template(template_choice))
+        #     template_data = get_custom_input(select_template(template_choice))8
         if template_choice in ['1','2','3','4']:
             selected_template = select_template(template_choice)
         else:
@@ -553,7 +569,7 @@ def router_body_stickers():
             
             print("\nWould you like to edit the template?")
             if input("\nDo you edit the template (y/n): ").lower() != 'n':
-                select_template = get_custom_input(selected_template)
+                selected_template = get_custom_input(selected_template)
                 # Example of breaking the loop or continuing based on some condition
                 if input("\nDo you want to continue? (y/n): ").lower() != 'n':
                     break
