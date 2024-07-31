@@ -288,13 +288,15 @@ def router_body_stickers():
             #BARCODE
             draw_barcode(c, x + 1, y + 83, sn, -90)
 
+            print("IMEI : ", imei)
+
             router_data = {}
             for key, value in selected_template.items():
-                if 'excel' not in value.strip().lower().replace(" ",""):
+                if 'excel' in value.strip().lower().replace(" ",""):
                     if key == 'imei':
                         router_data[key] = imei
-                    else:
-                        router_data[key] = value
+                else:
+                    router_data[key] = value
                 
 
 
