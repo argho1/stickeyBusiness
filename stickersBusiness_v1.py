@@ -241,7 +241,7 @@ def router_body_stickers():
             sys.exit(1)
 
 
-    def margined_body_sticker(selected_template, model):
+    def margined_body_sticker(selected_template):
 
         def draw_text(c, x, y, text, font_size, font="Helvetica" ):
             c.setFont(font, font_size*2)
@@ -288,7 +288,7 @@ def router_body_stickers():
             #BARCODE
             draw_barcode(c, x + 1, y + 83, sn, -90)
 
-            print("IMEI : ", imei)
+            
 
             router_data = {}
             for key, value in selected_template.items():
@@ -567,7 +567,7 @@ def router_body_stickers():
         if selected_template:
             print()
             for key, value in selected_template.items():
-                print(value)
+                print("\t\t\t\t",value)
             
             print("\nWould you like to edit the template?")
             if input("\nDo you edit the template (y/n): ").lower() != 'n':
@@ -601,12 +601,13 @@ def router_body_stickers():
         print()
         print(f"Sticker PDF created: {pdf_path}")
 
-
+    # Cellular router
     if template_choice == '3':
-        margined_body_sticker(selected_template, 'cr2020')
+        margined_body_sticker(selected_template)
     
+    # cWAN
     if template_choice == '4':
-        margined_body_sticker(selected_template, 'cwanbb')
+        margined_body_sticker(selected_template)
 
 
 
