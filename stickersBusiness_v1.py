@@ -240,7 +240,8 @@ def router_body_stickers():
             shutil.rmtree(directory)
             sys.exit(1)
 
-    def margined_body_sticker(model):
+
+    def margined_body_sticker(selected_template, model):
 
         def draw_text(c, x, y, text, font_size, font="Helvetica" ):
             c.setFont(font, font_size*2)
@@ -412,8 +413,11 @@ def router_body_stickers():
         # A4 dimensions in points
         width, height = A4
 
+        os.startfile('stickers.pdf')
 
         c.save()
+
+
 
 
     def validateExcel(chosen_excel_file, EXCEL_COLUMN_1_NAME, EXCEL_COLUMN_2_NAME):
@@ -464,16 +468,24 @@ def router_body_stickers():
 
     def get_custom_input(selected_template):
 
-        # print_banner("here")
-        # print(selected_template)
+        edited_template = {}
         for key, value in selected_template.items():
-            print(key, ":", value)
+            
+            if 'excel' not in value.strip().lower().replace(" ",""):
+                print("\nDefault : ", str(value))
+                userInput = input("\nEnter data or Hit enter to select default data :")
+                
+                if userInput == "":
+                    edited_template[key] = value
+                else:
+                    edited_template[key] = userInput
+            else:
+                print("Value taken from Excel : ",value)
 
+        for key, value in edited_template.items():
+            print("")
 
-
-
-
-        return 
+        return edited_template 
     
 
     def select_template(template_choice):
@@ -541,8 +553,7 @@ def router_body_stickers():
             
             print("\nWould you like to edit the template?")
             if input("\nDo you edit the template (y/n): ").lower() != 'n':
-                get_custom_input(selected_template)
-            
+                select_template = get_custom_input(selected_template)
                 # Example of breaking the loop or continuing based on some condition
                 if input("\nDo you want to continue? (y/n): ").lower() != 'n':
                     break
@@ -574,10 +585,10 @@ def router_body_stickers():
 
 
     if template_choice == '3':
-        margined_body_sticker('cr2020')
+        margined_body_sticker(selected_template, 'cr2020')
     
     if template_choice == '4':
-        margined_body_sticker('cwanbb')
+        margined_body_sticker(selected_template, 'cwanbb')
 
 
 
