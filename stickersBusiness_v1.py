@@ -272,7 +272,7 @@ def router_body_stickers():
 
             # Function to draw a sticker
         
-        def draw_sticker(c, x, y, width, height, sn, imei, model_number):
+        def draw_sticker(c, x, y, width, height, sn, imei, imei2, model_number):
             
             # STICKER FRAME
             c.line(x, y, x, y + 40 * mm + 3.5 * mm)  # Left border
@@ -293,8 +293,13 @@ def router_body_stickers():
             router_data = {}
             for key, value in selected_template.items():
                 if 'excel' in value.strip().lower().replace(" ",""):
-                    if key == 'imei':
-                        router_data[key] = imei
+                    print(value)
+                    if key == 'imei1':
+                        router_data[key] = f"IMEI 1 : {imei}"
+                    if key == 'imei2':
+                        router_data[key] = f"IMEI 2 : {imei2}"
+                elif key == 'model':
+                    router_data[key] = f"Model : {model_number}"
                 else:
                     router_data[key] = value
                 
@@ -319,8 +324,14 @@ def router_body_stickers():
 
             print(router_data)
             print("\nRouter Data Len : ",len(router_data))
+            
+            if len(router_data) == 5:
+                font = 3
+                align_x = x + 14 * mm # 14 default
+                align_y = y + 27.5 * mm # 26 default
+                space = 0
 
-            if len(router_data) == 4:
+            elif len(router_data) == 4:
                 font = 3
                 align_x = x + 14 * mm # 14 default
                 align_y = y + 26 * mm # 26 default
@@ -333,7 +344,7 @@ def router_body_stickers():
                 space = 0
             
             else:
-                print("Wrong size dictionary passed, improve code, call Argho lol!")
+                print(f"{len(router_data)} Wrong size dictionary passed, improve code, call Argho lol!")
 
             #TOP LINE
             c.line(align_x - 1.5 * mm, align_y + 5 * mm, x + width - 10, align_y + 5 * mm )  # Top border
@@ -352,6 +363,9 @@ def router_body_stickers():
                     space = space - 10
                 elif key in ['bands1','bands2']:
                     draw_text(c, align_x + 2, space + align_y - 1.55 * mm, f"{value}", font, font='Helvetica-Bold')
+                    space = space - 10
+                elif key == "imei2":
+                    draw_text(c, align_x + 2, space + align_y - 1.55 * mm , f"{value}", font + 1)
                     space = space - 10
                 else:
                     draw_text(c, align_x + 2, space + align_y - 1.55 * mm , f"{value}", font + 1)
@@ -411,7 +425,14 @@ def router_body_stickers():
             sn = row['SN']
             
             imei = row['IMEI']
-            model_number = row['Model']
+            
+            try :
+                imei2 = row['IMEI2']
+            except Exception:
+                imei2 = 0
+                pass
+
+            model_number = row['MODEL']
             # print(sn, " ", imei)
             row_num = (index // stickers_per_row) % rows_per_page
             column = index % stickers_per_row
@@ -419,7 +440,7 @@ def router_body_stickers():
             x = start_x + column * (sticker_width + margin + additional_space)
             y = start_y - row_num * (sticker_height + 15 * mm)
 
-            draw_sticker(c, x , y, sticker_width, sticker_height, sn, imei, model_number)
+            draw_sticker(c, x , y, sticker_width, sticker_height, sn, imei, imei2, model_number)
 
             # Check if we need a new page
             if (index + 1) % (stickers_per_row * rows_per_page) == 0:
@@ -535,7 +556,8 @@ def router_body_stickers():
                 "title"   :  "cWAN",
                 'model'   : "Model : CR1112-A",
                 'power'   : 'Power : 12V / 1A',
-                "imei"    : "IMEI : # FROM EXCEL #",
+                "imei1"   : "IMEI : # FROM EXCEL #",
+                "imei2"   : "IMEI : # FROM EXCEL #",
             },
         }
 
