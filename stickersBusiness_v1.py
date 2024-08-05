@@ -295,46 +295,40 @@ def router_body_stickers():
                 if 'excel' in value.strip().lower().replace(" ",""):
                     print(value)
                     if key == 'imei1':
-                        router_data[key] = f"IMEI 1 : {imei}"
-                    if key == 'imei2':
-                        router_data[key] = f"IMEI 2 : {imei2}"
-                elif key == 'model':
-                    router_data[key] = f"Model : {model_number}"
+                        if imei != 0:
+                            router_data[key] = f"IMEI 1 : {imei}"
+                        else:
+                            router_data[key] = 0
+                    elif key == 'imei2':
+                        if imei2 != 0:
+                            router_data[key] = f"IMEI 2 : {imei2}"
+                        else:
+                            router_data[key] = 0
+                    elif key == 'model':
+                        router_data[key] = f"Model : {model_number}"
                 else:
                     router_data[key] = value
-                
 
-
-            # if model == 'cr2020':
-            #     router_data = {
-            #         "title"   : "Cellular Router",
-            #         'model'   : "Model : CR2020",
-            #         'power'   : 'Power : 9-36V / 1.5A',
-            #         'version' : 'Version : V2A-S230E',
-            #         "bands1"  : "Bands : LTE FDD(B1/B3/B5/B8)",
-            #         "bands2"  : "       LTE TDD(B34/B38/B39/B40/B41)"
-            #     }
-            # if model == 'cwanbb':
-            #     router_data = {
-            #         "title"   :  "cWAN",
-            #         'model'   : f"Model : CR1112-A",
-            #         'power'   : 'Power : 12V / 1A',
-            #         "imei"    : f"IMEI : {imei}",
-            #         }
 
             print(router_data)
             print("\nRouter Data Len : ",len(router_data))
             
-            if len(router_data) == 5:
+            if "CR12" in router_data["model"]:
                 font = 3
                 align_x = x + 14 * mm # 14 default
                 align_y = y + 27.5 * mm # 26 default
                 space = 0
 
-            elif len(router_data) == 4:
+            elif "CR11" in router_data["model"]:
                 font = 3
                 align_x = x + 14 * mm # 14 default
                 align_y = y + 26 * mm # 26 default
+                space = 0
+            
+            elif "CR10" in router_data["model"]:
+                font = 3
+                align_x = x + 14 * mm # 14 default
+                align_y = y + 24.5 * mm # 26 default
                 space = 0
             
             elif len(router_data) == 6 :
@@ -364,10 +358,11 @@ def router_body_stickers():
                 elif key in ['bands1','bands2']:
                     draw_text(c, align_x + 2, space + align_y - 1.55 * mm, f"{value}", font, font='Helvetica-Bold')
                     space = space - 10
-                elif key == "imei2":
+                elif "imei" in key and router_data[key] != 0:
+                    print("Black Sheep ", router_data[key])
                     draw_text(c, align_x + 2, space + align_y - 1.55 * mm , f"{value}", font + 1)
                     space = space - 10
-                else:
+                elif router_data[key] != 0:
                     draw_text(c, align_x + 2, space + align_y - 1.55 * mm , f"{value}", font + 1)
                     space = space - 10
 
@@ -553,11 +548,11 @@ def router_body_stickers():
             },
             # cWAN Black Box
             '4': {
-                "title"   :  "cWAN",
-                'model'   : "Model : CR1112-A",
+                "title"   : "cWAN",
+                'model'   : "Model : # FROM EXCEL #",
                 'power'   : 'Power : 12V / 1A',
-                "imei1"   : "IMEI : # FROM EXCEL #",
-                "imei2"   : "IMEI : # FROM EXCEL #",
+                "imei1"   : "IMEI1 : # FROM EXCEL #",
+                "imei2"   : "IMEI2 : # FROM EXCEL #",
             },
         }
 
