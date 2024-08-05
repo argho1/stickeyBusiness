@@ -1,0 +1,3 @@
+customtkinter
+python-barcode 
+Pillow
