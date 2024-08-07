@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import time
 import shutil
@@ -64,26 +65,27 @@ def chooseFile(folder_path):
         # Filter files to include only Excel files
         files = [file for file in os.listdir(folder_path) if file.endswith(('.xlsx', '.xls', '.xlsm'))]
 
-        print_banner(f"Available Excel files in {folder_path}:")
-        
-        for i, file in enumerate(files, 1):
-            file_path = os.path.join(folder_path, file)
-            # Get the modification timestamp and format it as a date
-            modified_date = datetime.datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
-            print(f"{i}. {file} - Last Modified: {modified_date})")
-        
-        print("\n")
-        # Select file
-
         if not files:
-            print("The folder contains no Excel files.")
-            return None
+            print(f"\n{RED}Folder {folder_path} is EMPTY!! Please insert Your Excel files in that folder.{CEND}\n")
+            sys.exit(1)
+        
         else:
+            print_banner(f"Available Excel files in {folder_path}:")
+
+            for i, file in enumerate(files, 1):
+                file_path = os.path.join(folder_path, file)
+                # Get the modification timestamp and format it as a date
+                modified_date = datetime.datetime.fromtimestamp(os.path.getmtime(file_path)).strftime('%Y-%m-%d %H:%M:%S')
+                print(f"{i}. {file} - Last Modified: {modified_date})")
+            
+            print("\n")
+            # Select file
+        
             chosen_file = choose_file(files)
             print()
             print(f"\033[32mYou chose: {chosen_file}\033[0m\n")
             #chosen_file_location = f"{folder_path}{chosen_file}"
-            return chosen_file#_location
+            return chosen_file #_location
 
     except KeyboardInterrupt:
         print("\nCTRL + C pressed, getting the duck outta here.\n")
@@ -111,7 +113,7 @@ def print_progress_bar(page, start_time, total_pages):
     remaining_time_formatted = time.strftime("%H:%M:%S", time.gmtime(remaining_time))
     
     # Print the progress bar with elapsed time and estimated time of completion
-    sys.stdout.write(f'\rPage {page}/{total_pages} |[{bar}| {percentage:.2f}% Completed. Elapsed: {elapsed_time_formatted}, Remaining: {remaining_time_formatted}')
+    sys.stdout.write(f'\rPage {page}/{total_pages} |[{bar}| {percentage:.2f}% Done. Elapsed: {elapsed_time_formatted}, Remaining: {remaining_time_formatted}')
     sys.stdout.flush()
 
 
@@ -124,7 +126,7 @@ def router_body_stickers():
     print()
 
     #code to make stickrs pdf
-    def create_stickers(selected_template, barcodes):
+    def create_stickers(selected_template, barcodes, wan_mac_list, no_of_barcode):
 
         commodity_text_print = selected_template['commodity_text']
         model_text_print = selected_template['model_text']
@@ -174,9 +176,9 @@ def router_body_stickers():
 
                     # Add the data as text inside the sticker
                     c.setFillColor(colors.black)
-                    c.drawString(text_x, text_y, f"Commodity : {commodity_text_print}")
-                    c.drawString(text_x, text_y - 15, f"Model : {model_text_print}")
-                    c.drawString(text_x, text_y - 30, f"Input : {input_text_print}")
+                    c.drawString(text_x + 18, text_y - 16, f"Commodity : {commodity_text_print}")
+                    c.drawString(text_x + 18, text_y - 28, f"Model : {model_text_print}")
+                    c.drawString(text_x + 18, text_y - 40, f"Input : {input_text_print}")
 
                     c.setFont("Helvetica-Bold", 7)
 
@@ -189,7 +191,7 @@ def router_body_stickers():
                     sn_image.save(sn_image_filename)
                     #barcode_x for - to move left barecode_y to - to move down
                     c.drawImage(sn_image_filename, barcode_x-25, barcode_y-35, width=150, height=45)
-                    c.drawString(barcode_x-45, barcode_y-5, f'{EXCEL_COLUMN_1_NAME}:')
+                    c.drawString(barcode_x-45, barcode_y-5, 'SN:')
                     # c.drawString(barcode_x-44, barcode_y-10, f'{i}')
                     
                     macid = Code128(str(wan_mac_list[barcode_idx]), writer=ImageWriter())
@@ -198,7 +200,7 @@ def router_body_stickers():
                     macid_image.save(macid_image_filename)
                     # barcode_x for - to move left barecode_y to - to move down
                     c.drawImage(macid_image_filename, barcode_x-25, barcode_y-85, width=150, height=45)
-                    c.drawString(barcode_x-45, barcode_y-57, f'{EXCEL_COLUMN_2_NAME}:')
+                    c.drawString(barcode_x-45, barcode_y-57, f'MAC:')
 
                     # ean = Code128(eanno, writer=ImageWriter())
                     # ean_image = ean.render(writer_options={'module_width': 3, 'module_height': 80, "font_size": 20*4, "text_distance": 30})
@@ -226,6 +228,8 @@ def router_body_stickers():
             # Save the PDF document
             c.save()
 
+            os.startfile('router_stickers.pdf')
+
             return output_pdf
         
         except FileNotFoundError:
@@ -241,7 +245,7 @@ def router_body_stickers():
             sys.exit(1)
 
 
-    def margined_body_sticker(selected_template):
+    def margined_body_sticker(selected_template, serial_number_list, imei1_list, imei2_list, model_list):
 
         def draw_text(c, x, y, text, font_size, font="Helvetica" ):
             c.setFont(font, font_size*2)
@@ -377,22 +381,10 @@ def router_body_stickers():
 
 
 
-            # Draw lines framing the sticker
-
-
-
-
-        # Load data from Excel
-        # excel_path = chooseFile("./data/")  # Adjust the path to your Excel file
-        excel_path = "./data/SN.xlsx"
-        df = pd.read_excel(excel_path)
-        df['IMEI'] = df['IMEI'].apply(lambda x: 'N/A' if pd.isna(x) or x == '' or x == 'nan' else int(x))
-
         # Create a PDF for output
         c = canvas.Canvas("stickers.pdf", pagesize=A4)
         width, height = A4  # width and height of the page
 
-        print(df)
         # Page and sticker dimensions in millimeters
         page_width, page_height = A4
         sticker_width, sticker_height = 49.2 * mm, 40 * mm
@@ -416,29 +408,30 @@ def router_body_stickers():
         start_y = page_height - margin - sticker_height
 
         # Iterate over rows in the DataFrame
-        for index, row in df.iterrows():
-            sn = row['SN']
+        for i in range(len(serial_number_list)):
+            sn = serial_number_list[i]
             
-            imei = row['IMEI']
+            imei1 = imei1_list[i]
+            model_number = model_list[i]
             
             try :
-                imei2 = row['IMEI2']
+                imei2 = imei2_list[i]
             except Exception:
                 imei2 = 0
                 pass
 
-            model_number = row['MODEL']
+            
             # print(sn, " ", imei)
-            row_num = (index // stickers_per_row) % rows_per_page
-            column = index % stickers_per_row
+            row_num = (i // stickers_per_row) % rows_per_page
+            column = i % stickers_per_row
 
             x = start_x + column * (sticker_width + margin + additional_space)
             y = start_y - row_num * (sticker_height + 15 * mm)
 
-            draw_sticker(c, x , y, sticker_width, sticker_height, sn, imei, imei2, model_number)
+            draw_sticker(c, x , y, sticker_width, sticker_height, sn, imei1, imei2, model_number)
 
             # Check if we need a new page
-            if (index + 1) % (stickers_per_row * rows_per_page) == 0:
+            if (i + 1) % (stickers_per_row * rows_per_page) == 0:
                 c.showPage()
                 start_y = page_height - margin - sticker_height  # Reset y position
 
@@ -446,19 +439,18 @@ def router_body_stickers():
         # A4 dimensions in points
         width, height = A4
 
-        os.startfile('stickers.pdf')
-
         c.save()
 
+        os.startfile('stickers.pdf')
 
 
 
-    def validateExcel(chosen_excel_file, EXCEL_COLUMN_1_NAME, EXCEL_COLUMN_2_NAME):
+    def validateExcel(chosen_excel_file, excel_column_names_list):
         # Load the Excel file into a pandas DataFrame
         df = pd.read_excel(chosen_excel_file, engine='openpyxl')
 
 
-        exampleData="""\033[33m
+        ODCP_exampleData="""\033[33m
             EXAMPLE DATA:-
 
             +----------------+-------------------+
@@ -470,33 +462,50 @@ def router_body_stickers():
             | RCRODBK01290004| 44:B5:9C:00:46:59 |
             +----------------+-------------------+\033[0m"""
 
+        cWAN_BB_exampleData="""\033[33m
+            EXAMPLE DATA:-
+            
+            +----------------+-----------------+-----------------+----------+
+            | SN             | IMEI1           | IMEI2           | MODEL    |
+            +----------------+-----------------+-----------------+----------+
+            | CRARM311736E6D | 861942058188336 | 860965062571024 | CR1211-A |
+            | CRARM311736E7D | 861942058188337 |                 | CR1111-A |
+            | CRARM311736E8D |                 |                 | CR1011-A |
+            | CRARM311736E9D | 861942058188338 | 860965062571025 | CR1211-A |
+            +----------------+-----------------+-----------------+----------+\033[0m"""
+
+
+
         try:
+            column_data = {}
             # Select the columns by name
-            serial_number_list = df[EXCEL_COLUMN_1_NAME].tolist()
-            wan_mac_list = df[EXCEL_COLUMN_2_NAME].tolist()
+            for column in excel_column_names_list:
+                # Replace empty values with '0' and convert to list
+                column_data[column] = df[column].fillna('0').tolist()
+            return column_data
             
         except KeyError as ke:
             print("\033[31mColumns are not properly named.\033[0m")
             print()
             print("\033[33mPlease have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like example below.\033[0m")
-            print(exampleData)
+            print(cWAN_BB_exampleData)
             return
 
 
 
 
-        if len(serial_number_list) == len(wan_mac_list) and df[EXCEL_COLUMN_1_NAME].isnull().sum() == 0 and df[EXCEL_COLUMN_2_NAME].isnull().sum() == 0:
-            print()
-            return serial_number_list, wan_mac_list
-        else:
-            print()
-            print("\x1b[31mValue missing or MAC vs Serial Number count mismatch!!\x1b[0m")
-            print("\x1b[31mPlease Check Excel Sheet and Try Again!!\x1b[0m")
-            print("\033[31mColumns are not properly named.\033[0m")
-            print()
-            print("\033[33mPlease have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like example below.\033[0m")
-            print(exampleData)
-            return
+        # if len(serial_number_list) == len(wan_mac_list) and df[EXCEL_COLUMN_1_NAME].isnull().sum() == 0 and df[EXCEL_COLUMN_2_NAME].isnull().sum() == 0:
+        #     print()
+        #     return serial_number_list, wan_mac_list
+        # else:
+        #     print()
+        #     print("\x1b[31mValue missing or MAC vs Serial Number count mismatch!!\x1b[0m")
+        #     print("\x1b[31mPlease Check Excel Sheet and Try Again!!\x1b[0m")
+        #     print("\033[31mColumns are not properly named.\033[0m")
+        #     print()
+        #     print("\033[33mPlease have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like example below.\033[0m")
+        #     print(exampleData)
+        #     return
         
 
     def get_custom_input(selected_template):
@@ -579,8 +588,6 @@ def router_body_stickers():
             print(f"{RED}Invalid Input!{CEND}")
 
 
-
-
         if selected_template:
             print()
             for key, value in selected_template.items():
@@ -600,31 +607,47 @@ def router_body_stickers():
     #directory to store barcode, deleted when program done or when ctrl+c presses
     directory = "./bufferDEL"
 
-    # Declearing comumn names as per excel sheet
-    EXCEL_COLUMN_1_NAME = 'SN'
-    EXCEL_COLUMN_2_NAME = 'IMEI'
 
 
-    chosen_excel_file = chooseFile("./data/")
+    chosen_excel_file = chooseFile("./ExcelData/")
 
-    serial_number_list, wan_mac_list = validateExcel(chosen_excel_file, EXCEL_COLUMN_1_NAME, EXCEL_COLUMN_2_NAME)
 
-    no_of_barcode = len(serial_number_list)
+
+    # no_of_barcode = len(serial_number_list)
 
 
 
     if template_choice in ['1','2']:
-        pdf_path = create_stickers(selected_template, serial_number_list)
+
+        excel_column_names_list = ['SN', 'WAN_MAC']
+        dataset = validateExcel(chosen_excel_file, excel_column_names_list)
+
+        serial_number_list = dataset['SN']
+        wan_mac_list = dataset["WAN_MAC"]
+
+        no_of_barcode = len(serial_number_list)
+
+        pdf_path = create_stickers(selected_template, serial_number_list, wan_mac_list, no_of_barcode)
         print()
         print(f"Sticker PDF created: {pdf_path}")
 
     # Cellular router
     if template_choice == '3':
-        margined_body_sticker(selected_template)
+        margined_body_sticker(selected_template, serial_number_list, imei1_list, imei2_list, model_list)
     
     # cWAN
     if template_choice == '4':
-        margined_body_sticker(selected_template)
+
+        excel_column_names_list = ['SN', 'IMEI1', 'IMEI2', 'MODEL']
+        dataset = validateExcel(chosen_excel_file, excel_column_names_list)
+
+        serial_number_list = dataset['SN']
+        imei1_list = dataset['IMEI1']
+        imei2_list = dataset['IMEI2']
+        model_list = dataset['MODEL']
+
+        margined_body_sticker(selected_template, serial_number_list, imei1_list, imei2_list, model_list)
+
 
 
 
@@ -799,6 +822,7 @@ def router_box_stickers():
 
         print("Please have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like exaple below.")
         print(exampleData)
+        return
 
     no_of_barcode = len(sn_list)
 
@@ -859,12 +883,12 @@ def cartonStickers():
     def extract_sn_mac(excel_data):
         # Dictionary to hold the box data
         box_data = {}
-        boxvalue4search = ['box', 'box no']  # List of strings to search for
+        boxvalue4search = ['box', 'boxno']  # List of strings to search for
         current_box = None  # To keep track of the current box number
 
         for index, row in excel_data.iterrows():
             # Check if any of the terms in boxvalue4search are in the first cell of the row
-            if any(search_term in str(row[0]).lower().replace('.','') for search_term in boxvalue4search):
+            if any(search_term in str(row[0]).lower().replace('.','').replace(" ","") for search_term in boxvalue4search):
                 current_box = str(row[0])  # Update the current box number
                 box_data[current_box] = {'RSN': [], 'MAC': []}
             elif pd.notnull(row[1]) and pd.notnull(row[2]) and current_box:
@@ -899,15 +923,15 @@ def cartonStickers():
     #     # Return a DataFrame with the first column data and None for the column index
     #     return pd.DataFrame({f"{sheet.title}_1": first_column_data}), None
 
-    def boxStickers(data, ctnno, total_boxes):
+    def boxStickers(data, ctnno, total_boxes, msn, ean):
 
         start_time = time.time()
         
         # MODEL MSN
         # msn = "M5005491008BKA00" #Add without box number
-        msn = "M5005571808BKA00"
+        # msn = "M5005571808BKA00"
             
-        ean = "0796554198316"
+        # ean = "0796554198316"
 
         #ctnno = input("Enter Carton No. : ")
 
@@ -1070,18 +1094,25 @@ def cartonStickers():
             i = i + 1 
         # Save the PDF
         print()
-        print(f"File save at : Cartion_Box_Sticker_pdf/Box{ctnno}.pdf")
         pdf.save()
+        print(f"{GREEN}File saved at : Cartion_Box_Sticker_pdf/Box{ctnno}.pdf{CEND}\n")
+        
 
-    def readEXCELnValidate():
-
-        df = pd.read_excel(location)  # You would use the actual path to your Excel file
+    def readEXCELnValidate(df):
 
         # Extract the data for all boxes once
         extracted_data = extract_sn_mac(df)
 
+        # Converting BOX1 to box1 for comparison. #lowercase #filter
+        processed_data = {
+            re.sub(r'[^a-z0-9]', '', key.lower()): value
+            for key, value in extracted_data.items()
+        }
+
         # Extract box numbers and convert them to integers for proper numeric sorting
-        box_numbers = [int(''.join(filter(str.isdigit, box))) for box in extracted_data.keys()]
+        box_numbers = [int(''.join(filter(str.isdigit, box))) for box in processed_data.keys()]
+
+        print(f"\n{YELLOW}No. of BOXES detected : {len(box_numbers)}{CEND}")
 
         # Now sort the box numbers in numeric order
         sorted_box_numbers = sorted(box_numbers)
@@ -1092,8 +1123,8 @@ def cartonStickers():
                 # Convert back to the original box format if needed, or directly use box_number if applicable
                 box_key = f"{searchValue}{box_number}"  # Adjust format as necessary based on how your keys are structured
                 if box_number >= startFrom:
-                    print(f"{searchValue}{box_number}")
-                    boxStickers(extracted_data[f"{searchValue}{box_number}"], str(box_number), total_boxes)
+                    print(f"\n{BRIGHT_BLUE}Printing sticker for {searchValue}{box_number}{CEND}")
+                    boxStickers(processed_data[f"{searchValue}{box_number}"], str(box_number), total_boxes, msn, ean)
         except KeyError as ke:
             print()
             print(f"{RED}Data not formatted properly. Please format data as below :-{CEND}")
@@ -1120,18 +1151,22 @@ def cartonStickers():
 
 
     # Load the entire workbook once, instead of in the loop
-    location = chooseFile("./boxData/")
+    location = chooseFile("./ExcelData/")
     # MODEL DATASET
     # location = 'MODEL_carton_jio300_7feb24.xlsx'
 
     print()
-        
 
-    startFrom = int(input("Enter Box no. to start with : "))  # Assuming we are starting from box 1 for the sake of demonstration
+    msn = input("Enter MSN : ")
+    ean = input("Enter EAN : ")    
+
+    startFrom = int(input("Enter Box No. to start printing from : "))  # Assuming we are starting from box 1 for the sake of demonstration
 
     searchValue = 'box'
 
-    readEXCELnValidate()
+    df = pd.read_excel(location)  # You would use the actual path to your Excel file
+
+    readEXCELnValidate(df)
 
 
 
@@ -1143,8 +1178,6 @@ def userInterface():
 
     try:
         while True:
-
-            
             print()
             print("Enter 1 to create Router Body Stickers.")
             print("Enter 2 to create Router BOX Stickers.")
