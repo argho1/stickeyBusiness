@@ -70,6 +70,7 @@ def chooseFile(folder_path):
             sys.exit(1)
         
         else:
+            print()
             print_banner(f"Available Excel files in {folder_path}:")
 
             for i, file in enumerate(files, 1):
@@ -134,9 +135,13 @@ def router_body_stickers():
 
         try:
             start_time = time.time()
+
+            sticker_name = input("Please Enter sticker name : ")
+
+            sticker_pdf_name = f"{DOWNLOAD_DIR}{sticker_name}_body_stickers.pdf"
+
             # Create a new PDF document
-            output_pdf = "router_stickers.pdf"
-            c = canvas.Canvas(output_pdf, pagesize=A4)
+            c = canvas.Canvas(sticker_pdf_name, pagesize=A4)
 
             # Set the size and position of the stickers
             sticker_width = 200
@@ -228,20 +233,15 @@ def router_body_stickers():
             # Save the PDF document
             c.save()
 
-            os.startfile('router_stickers.pdf')
+            os.startfile(sticker_pdf_name)
 
-            return output_pdf
+            return sticker_pdf_name
         
-        except FileNotFoundError:
-            
-            os.makedirs(directory)
-            create_stickers(select_template, serial_number_list)
-            shutil.rmtree(directory)
         
         except KeyboardInterrupt:
             print()
             print_banner("Rage Quit Inititated!! Deleteing ./bufferDEL folder.")
-            shutil.rmtree(directory)
+            shutil.rmtree(BUFFER_DIR)
             sys.exit(1)
 
 
@@ -378,101 +378,123 @@ def router_body_stickers():
             #TAIL
             draw_text(c,align_x + 1 * mm , align_y + space , text, font + 1                                                                                                                                                                                                        , font='Helvetica-Bold')
             
+        
 
 
 
-        # Create a PDF for output
-        c = canvas.Canvas("stickers.pdf", pagesize=A4)
-        width, height = A4  # width and height of the page
 
-        # Page and sticker dimensions in millimeters
-        page_width, page_height = A4
-        sticker_width, sticker_height = 49.2 * mm, 40 * mm
-        margin = 15 * mm  # Margin on each side
-        additional_space = 30 * mm  # Additional space between stickers
+        
+        try:
+            sticker_name = input("Please Enter sticker name : ")
 
-        # Adjusting the number of columns
-        num_columns = 2
+            sticker_pdf_name = f"{DOWNLOAD_DIR}{sticker_name}_stickers.pdf"
 
-        # Check if the total width exceeds the page width
-        total_width_needed = num_columns * (sticker_width + margin + additional_space) + margin
-        if total_width_needed > page_width:
-            raise ValueError(f"Total width {total_width_needed/mm}mm exceeds page width {page_width/mm}mm. Reduce number of columns or sticker width.")
+            # Create a PDF for output
+            c = canvas.Canvas(sticker_pdf_name, pagesize=A4)
+            width, height = A4  # width and height of the page
 
-        # Calculate the number of stickers per row and number of rows
-        stickers_per_row = num_columns  # same as the number of columns
-        rows_per_page = int((page_height - 2 * margin) / (sticker_height + 10 * mm))
+            # Page and sticker dimensions in millimeters
+            page_width, page_height = A4
+            sticker_width, sticker_height = 49.2 * mm, 40 * mm
+            margin = 15 * mm  # Margin on each side
+            additional_space = 30 * mm  # Additional space between stickers
 
-        # Define starting positions
-        start_x = margin + 20
-        start_y = page_height - margin - sticker_height
+            # Adjusting the number of columns
+            num_columns = 2
 
-        # Iterate over rows in the DataFrame
-        for i in range(len(serial_number_list)):
-            sn = serial_number_list[i]
-            
-            imei1 = imei1_list[i]
-            model_number = model_list[i]
-            
-            try :
-                imei2 = imei2_list[i]
-            except Exception:
-                imei2 = 0
-                pass
+            # Check if the total width exceeds the page width
+            total_width_needed = num_columns * (sticker_width + margin + additional_space) + margin
+            if total_width_needed > page_width:
+                raise ValueError(f"Total width {total_width_needed/mm}mm exceeds page width {page_width/mm}mm. Reduce number of columns or sticker width.")
 
-            
-            # print(sn, " ", imei)
-            row_num = (i // stickers_per_row) % rows_per_page
-            column = i % stickers_per_row
+            # Calculate the number of stickers per row and number of rows
+            stickers_per_row = num_columns  # same as the number of columns
+            rows_per_page = int((page_height - 2 * margin) / (sticker_height + 10 * mm))
 
-            x = start_x + column * (sticker_width + margin + additional_space)
-            y = start_y - row_num * (sticker_height + 15 * mm)
+            # Define starting positions
+            start_x = margin + 20
+            start_y = page_height - margin - sticker_height
 
-            draw_sticker(c, x , y, sticker_width, sticker_height, sn, imei1, imei2, model_number)
+            # Iterate over rows in the DataFrame
+            for i in range(len(serial_number_list)):
+                sn = serial_number_list[i]
+                
+                imei1 = imei1_list[i]
+                model_number = model_list[i]
+                
+                try :
+                    imei2 = imei2_list[i]
+                except Exception:
+                    imei2 = 0
+                    pass
 
-            # Check if we need a new page
-            if (i + 1) % (stickers_per_row * rows_per_page) == 0:
-                c.showPage()
-                start_y = page_height - margin - sticker_height  # Reset y position
+                
+                # print(sn, " ", imei)
+                row_num = (i // stickers_per_row) % rows_per_page
+                column = i % stickers_per_row
 
+                x = start_x + column * (sticker_width + margin + additional_space)
+                y = start_y - row_num * (sticker_height + 15 * mm)
 
-        # A4 dimensions in points
-        width, height = A4
+                draw_sticker(c, x , y, sticker_width, sticker_height, sn, imei1, imei2, model_number)
 
-        c.save()
-
-        os.startfile('stickers.pdf')
-
+                # Check if we need a new page
+                if (i + 1) % (stickers_per_row * rows_per_page) == 0:
+                    c.showPage()
+                    start_y = page_height - margin - sticker_height  # Reset y position
 
 
-    def validateExcel(chosen_excel_file, excel_column_names_list):
+            # A4 dimensions in points
+            width, height = A4
+
+            c.save()
+
+            os.startfile(sticker_pdf_name)
+
+            print(f"Printing at {DOWNLOAD_DIR}{sticker_pdf_name}")
+            shutil.rmtree(BUFFER_DIR)
+        
+        except KeyboardInterrupt:
+            print()
+            print_banner("Rage Quit Inititated!! Deleteing ./bufferDEL folder.")
+            shutil.rmtree(BUFFER_DIR)
+            sys.exit(1)
+
+
+
+
+
+    def validate_N_list_Excel(chosen_template, chosen_excel_file, excel_column_names_list):
         # Load the Excel file into a pandas DataFrame
         df = pd.read_excel(chosen_excel_file, engine='openpyxl')
 
-
-        ODCP_exampleData="""\033[33m
-            EXAMPLE DATA:-
-
-            +----------------+-------------------+
-            | SN             | WAN_MAC           |
-            +----------------+-------------------+
-            | RCRODBK01290001| 44:B5:9C:00:46:53 |
-            | RCRODBK01290002| 44:B5:9C:00:46:55 |
-            | RCRODBK01290003| 44:B5:9C:00:46:57 |
-            | RCRODBK01290004| 44:B5:9C:00:46:59 |
-            +----------------+-------------------+\033[0m"""
-
-        cWAN_BB_exampleData="""\033[33m
-            EXAMPLE DATA:-
+        if chosen_template == "SN_MAC_TEMPLATE":
             
-            +----------------+-----------------+-----------------+----------+
-            | SN             | IMEI1           | IMEI2           | MODEL    |
-            +----------------+-----------------+-----------------+----------+
-            | CRARM311736E6D | 861942058188336 | 860965062571024 | CR1211-A |
-            | CRARM311736E7D | 861942058188337 |                 | CR1111-A |
-            | CRARM311736E8D |                 |                 | CR1011-A |
-            | CRARM311736E9D | 861942058188338 | 860965062571025 | CR1211-A |
-            +----------------+-----------------+-----------------+----------+\033[0m"""
+            exampleData="""\033[33m
+                EXAMPLE DATA:-
+
+                +----------------+-------------------+
+                | SN             | WAN_MAC           |
+                +----------------+-------------------+
+                | RCRODBK01290001| 44:B5:9C:00:46:53 |
+                | RCRODBK01290002| 44:B5:9C:00:46:55 |
+                | RCRODBK01290003| 44:B5:9C:00:46:57 |
+                | RCRODBK01290004| 44:B5:9C:00:46:59 |
+                +----------------+-------------------+\033[0m"""
+
+        elif chosen_template == "SN_IMEI_MODEL_TEMPLATE":
+            
+            exampleData="""\033[33m
+                EXAMPLE DATA:-
+                
+                +----------------+-----------------+-----------------+----------+
+                | SN             | IMEI1           | IMEI2           | MODEL    |
+                +----------------+-----------------+-----------------+----------+
+                | CRARM311736E6D | 861942058188336 | 860965062571024 | CR1211-A |
+                | CRARM311736E7D | 861942058188337 |                 | CR1111-A |
+                | CRARM311736E8D |                 |                 | CR1011-A |
+                | CRARM311736E9D | 861942058188338 | 860965062571025 | CR1211-A |
+                +----------------+-----------------+-----------------+----------+\033[0m"""
 
 
 
@@ -487,9 +509,11 @@ def router_body_stickers():
         except KeyError as ke:
             print("\033[31mColumns are not properly named.\033[0m")
             print()
-            print("\033[33mPlease have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like example below.\033[0m")
-            print(cWAN_BB_exampleData)
-            return
+            print("\033[33mPlease have data in .xlsx format with column names like in the example below.\033[0m")
+            print(exampleData)
+            print(f"\n{RED}Opening {chosen_excel_file}, please check data!!{CEND}\n")
+            os.startfile(chosen_excel_file)
+            sys.exit(1)
 
 
 
@@ -572,7 +596,7 @@ def router_body_stickers():
     
     #
     while True:
-        print(f"{BRIGHT_YELLOW}\n<--## Choose TEMPLATES ##-->{CEND}")
+        print(f"{YELLOW}\n<--## Choose TEMPLATES ##-->{CEND}")
         print("1. ODCP")
         print("2. cWAN")
         print("3. CR2020")
@@ -580,12 +604,12 @@ def router_body_stickers():
         print("\nSelect a template please..")
         
         template_choice = input("\nChoose a Template :")
-        # if template_choice.strip() == "":
-        #     template_data = get_custom_input(select_template(template_choice))8
+
         if template_choice in ['1','2','3','4']:
             selected_template = select_template(template_choice)
         else:
-            print(f"{RED}Invalid Input!{CEND}")
+            print(f"\n{RED}Invalid Input!{CEND}")
+            continue
 
 
         if selected_template:
@@ -605,11 +629,11 @@ def router_body_stickers():
 
 
     #directory to store barcode, deleted when program done or when ctrl+c presses
-    directory = "./bufferDEL"
+    BUFFER_DIR = "./bufferDEL"
+    DOWNLOAD_DIR = "./Router_Body_Stickers_PDF\\"
+    
 
-
-
-    chosen_excel_file = chooseFile("./ExcelData/")
+    chosen_excel_file = chooseFile("./ExcelData\\")
 
 
 
@@ -620,7 +644,7 @@ def router_body_stickers():
     if template_choice in ['1','2']:
 
         excel_column_names_list = ['SN', 'WAN_MAC']
-        dataset = validateExcel(chosen_excel_file, excel_column_names_list)
+        dataset = validate_N_list_Excel("SN_MAC_TEMPLATE", chosen_excel_file, excel_column_names_list)
 
         serial_number_list = dataset['SN']
         wan_mac_list = dataset["WAN_MAC"]
@@ -629,7 +653,7 @@ def router_body_stickers():
 
         pdf_path = create_stickers(selected_template, serial_number_list, wan_mac_list, no_of_barcode)
         print()
-        print(f"Sticker PDF created: {pdf_path}")
+        print(f"{GREEN}Sticker PDF created: {pdf_path}{CEND}\n")
 
     # Cellular router
     if template_choice == '3':
@@ -639,7 +663,7 @@ def router_body_stickers():
     if template_choice == '4':
 
         excel_column_names_list = ['SN', 'IMEI1', 'IMEI2', 'MODEL']
-        dataset = validateExcel(chosen_excel_file, excel_column_names_list)
+        dataset = validate_N_list_Excel("SN_IMEI_MODEL_TEMPLATE", chosen_excel_file, excel_column_names_list)
 
         serial_number_list = dataset['SN']
         imei1_list = dataset['IMEI1']
@@ -867,17 +891,7 @@ def router_box_stickers():
     #'module_width': 10, 'module_height': 80, "font_size": 20*5, "text_distance": 28
 
 
-def cartonStickers():
-
-    # Function to print the data in a formatted way
-    # def print_formatted_data(box_data):
-        # for box, details in box_data.items():
-        #     print(f"Data for {box}:")
-        #     print(f"{'RSN':<20} {'MAC':<20}")
-        #     # Skip the first element of each list because it's the header based on how we simulated the data
-        #     for sn, mac in zip(details['RSN'][1:], details['MAC'][1:]):
-        #         print(f"{sn:<20} {mac:<20}")
-        #     print("\n")
+def router_carton_stickers():
 
     # Function to process the Excel data and extract RSN and MAC for each box
     def extract_sn_mac(excel_data):
@@ -897,49 +911,14 @@ def cartonStickers():
 
         return box_data
 
-    # Function to extract data below the search values in the same column
-    # def extract_data_below_values(sheet, search_values):
-    #     # Iterate through all cells and search for the specified values
-    #     for row in sheet.iter_rows(min_row=1, max_row=sheet.max_row, min_col=1, max_col=sheet.max_column):
-    #         for cell in row:
-    #             # Normalize the cell value for comparison
-    #             normalized_cell_value = str(cell.value).lower().replace(' ', '').replace('.', '').replace('\xa0', '')
-
-    #             # Search for the normalized values
-    #             if any(search_value in normalized_cell_value for search_value in search_values):
-    #                 # Get the row and column indices
-    #                 row_index = cell.row
-    #                 col_index = cell.column
-
-    #                 # Extract the data below the values in the same column
-    #                 data = [sheet.cell(i, col_index).value for i in range(row_index + 1, sheet.max_row + 1)]
-
-    #                 # Return a tuple with both data and column index
-    #                 return pd.DataFrame({f"{sheet.title}_{col_index}": data}), col_index
-
-    #     # If none of the search values are found, extract all non-empty values from the first column
-    #     first_column_data = [sheet.cell(i, 1).value for i in range(1, sheet.max_row + 1) if sheet.cell(i, 1).value is not None]
-
-    #     # Return a DataFrame with the first column data and None for the column index
-    #     return pd.DataFrame({f"{sheet.title}_1": first_column_data}), None
-
-    def boxStickers(data, ctnno, total_boxes, msn, ean):
+    def cartonStickers(data, ctnno, total_boxes, msn, ean):
 
         start_time = time.time()
-        
-        # MODEL MSN
-        # msn = "M5005491008BKA00" #Add without box number
-        # msn = "M5005571808BKA00"
-            
-        # ean = "0796554198316"
 
         #ctnno = input("Enter Carton No. : ")
 
         # Create PDF canvas
-        pdf = canvas.Canvas(f'Cartion_Box_Sticker_pdf/Box{ctnno}.pdf', pagesize=A4)
-
-
-
+        pdf = canvas.Canvas(f'Cartion_Box_Sticker_PDF/Box{ctnno}.pdf', pagesize=A4)
 
         #collecting data fomr excel file and storing it in an array
         val1 = []
@@ -957,11 +936,6 @@ def cartonStickers():
         # Barcode per box
         barcode_per_page = 12 #int(input("Enter Barcode Per Page (12 max) :"))
 
-
-        
-        
-        
-
         if int(ctnno) <= 9:
             ctnno = "0"+str(ctnno)
 
@@ -969,8 +943,6 @@ def cartonStickers():
 
         #no = int(input('Start RSN for this sheet : '))
 
-
-        
         # Variables to track page count and barcode count
         page_count = 0
         barcode_count = 0
@@ -1095,7 +1067,7 @@ def cartonStickers():
         # Save the PDF
         print()
         pdf.save()
-        print(f"{GREEN}File saved at : Cartion_Box_Sticker_pdf/Box{ctnno}.pdf{CEND}\n")
+        print(f"{GREEN}File saved at : Cartion_Box_Sticker_PDF/Box{ctnno}.pdf{CEND}\n")
         
 
     def readEXCELnValidate(df):
@@ -1124,7 +1096,7 @@ def cartonStickers():
                 box_key = f"{searchValue}{box_number}"  # Adjust format as necessary based on how your keys are structured
                 if box_number >= startFrom:
                     print(f"\n{BRIGHT_BLUE}Printing sticker for {searchValue}{box_number}{CEND}")
-                    boxStickers(processed_data[f"{searchValue}{box_number}"], str(box_number), total_boxes, msn, ean)
+                    cartonStickers(processed_data[f"{searchValue}{box_number}"], str(box_number), total_boxes, msn, ean)
         except KeyError as ke:
             print()
             print(f"{RED}Data not formatted properly. Please format data as below :-{CEND}")
@@ -1179,6 +1151,8 @@ def userInterface():
     try:
         while True:
             print()
+            print(f"{YELLOW}+++++++++++++++++ MENU +++++++++++++++++{CEND}")
+            print()
             print("Enter 1 to create Router Body Stickers.")
             print("Enter 2 to create Router BOX Stickers.")
             print("Enter 3 to create Router Carton Stickers.")
@@ -1196,11 +1170,15 @@ def userInterface():
                 continue
 
             if choice == 3:
-                cartonStickers()
+                router_carton_stickers()
                 continue
 
             if choice == 0:
                 break
+
+            else:
+                print(f"\n{RED}Invalid input!! Please try again..{CEND}\n")
+                continue
         
     except KeyboardInterrupt:
             print()
@@ -1209,5 +1187,67 @@ def userInterface():
     # except Exception as e:
     #         print("Falling apart with error :-\n")
     #         print(e)
+
+
+
+def check_and_create_file():
+    print()
+    directory_list = [
+        './bufferDEL',
+        './Router_Body_Stickers_PDF', 
+        './Router_BOX_Stickers_PDF', 
+        './Router_BOX_Stickers_PDF'
+        ]
+
+    for directory in directory_list:
+        # Check if the directory exists
+        if not os.path.exists(directory):
+            try:
+                # Create the directory if it does not exist
+                os.makedirs(directory)
+                print(f"{BRIGHT_BLUE}Directory created: {directory}{CEND}")
+            except Exception as e:
+                print(f"{RED}An error occurred while creating directory {directory}: {e}{CEND}")
+
+
+def banner():
+    print(
+        f"""
+     ______________________________________________________________
+    /                                                              ==
+{RED}
+                                       |          
+                                      ...
+                                     .:+:-.
+                                    ..::*=:..      {CEND} {GREEN}
+                                ....::####:...
+                            ...-=::--*##=-::::=.
+                            ....::##############=. {CEND} {BRIGHT_BLUE}
+                    ........::#@#############@:.
+                    ..:%::=::::-#################%
+                ....::*#####=##################+ {CEND} {YELLOW}
+            ......:==%#########################. 
+            :::#:===+##########################-:.
+            .....:--%#########################:
+                ...::*#####-##################+ {CEND} {BRIGHT_BLUE}
+                    .:=::-::::=#################@
+                    .........:#+#############+:.
+                            ....::############%@+. {CEND} {GREEN}
+                            ..:-:::-###=:::..:.
+                                ....::###%:...
+                                    ...:-=:..      {CEND} {RED}
+                                    .:%::.
+                                      ...
+                                       |         {CEND} 
+            Stickey Business
+            - by Argho Sinha
+    \______________________________________________________________==
+
+"""
+    )
+
+banner()
+
+check_and_create_file()
 
 userInterface()
