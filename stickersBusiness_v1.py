@@ -92,6 +92,21 @@ def chooseFile(folder_path):
         print("\nCTRL + C pressed, getting the duck outta here.\n")
         sys.exit(1)
 
+def delete_contents_of_directory(directory):
+    if not os.path.exists(directory):
+        print(f"The directory {directory} does not exist.")
+        return
+
+    for item in os.listdir(directory):
+        item_path = os.path.join(directory, item)
+        
+        try:
+            if os.path.isfile(item_path) or os.path.islink(item_path):
+                os.remove(item_path)
+        
+        except Exception as e:
+            print(f"Failed to delete {item_path}. Reason: {e}")
+
 # Function to print the progress bar and estimate time of completion
 def print_progress_bar(page, start_time, total_pages):
     # Current progress
@@ -118,6 +133,62 @@ def print_progress_bar(page, start_time, total_pages):
     sys.stdout.flush()
 
 
+def check_and_create_file():
+    print()
+    directory_list = [
+        './bufferDEL',
+        './Router_Body_Stickers_PDF', 
+        './Router_BOX_Stickers_PDF', 
+        './Router_BOX_Stickers_PDF'
+        ]
+
+    for directory in directory_list:
+        # Check if the directory exists
+        if not os.path.exists(directory):
+            try:
+                # Create the directory if it does not exist
+                os.makedirs(directory)
+                print(f"{BRIGHT_BLUE}Directory created: {directory}{CEND}")
+            except Exception as e:
+                print(f"{RED}An error occurred while creating directory {directory}: {e}{CEND}")
+
+
+def banner():
+    print(
+        f"""
+     ______________________________________________________________
+    /                                                              ==
+{RED}
+                                       |          
+                                      ...
+                                     .:+:-.
+                                    ..::*=:..      {CEND} {GREEN}
+                                ....::####:...
+                            ...-=::--*##=-::::=.
+                            ....::##############=. {CEND} {BRIGHT_BLUE}
+                    ........::#@#############@:.
+                    ..:%::=::::-#################%
+                ....::*#####=##################+ {CEND} {YELLOW}
+            ......:==%#########################. 
+            :::#:===+##########################-:.
+            .....:--%#########################:
+                ...::*#####-##################+ {CEND} {BRIGHT_BLUE}
+                    .:=::-::::=#################@
+                    .........:#+#############+:.
+                            ....::############%@+. {CEND} {GREEN}
+                            ..:-:::-###=:::..:.
+                                ....::###%:...
+                                    ...:-=:..      {CEND} {RED}
+                                    .:%::.
+                                      ...
+                                       |         {CEND} 
+            Stickey Business
+            - by Argho Sinha
+    \______________________________________________________________==
+
+"""
+    )
+
 
 
 
@@ -127,7 +198,9 @@ def router_body_stickers():
     print()
 
     #code to make stickrs pdf
-    def create_stickers(selected_template, barcodes, wan_mac_list, no_of_barcode):
+    def create_stickers(selected_template, barcodes, wan_mac_list):
+
+        no_of_barcode = len(wan_mac_list)
 
         commodity_text_print = selected_template['commodity_text']
         model_text_print = selected_template['model_text']
@@ -137,6 +210,7 @@ def router_body_stickers():
             start_time = time.time()
 
             sticker_name = input("Please Enter sticker name : ")
+            print()
 
             sticker_pdf_name = f"{DOWNLOAD_DIR}{sticker_name}_body_stickers.pdf"
 
@@ -234,18 +308,18 @@ def router_body_stickers():
             c.save()
 
             os.startfile(sticker_pdf_name)
-
+            delete_contents_of_directory(BUFFER_DIR)
             return sticker_pdf_name
         
         
         except KeyboardInterrupt:
             print()
-            print_banner("Rage Quit Inititated!! Deleteing ./bufferDEL folder.")
-            shutil.rmtree(BUFFER_DIR)
+            print_banner("Rage Quit Inititated!!")
+            delete_contents_of_directory(BUFFER_DIR)
             sys.exit(1)
 
 
-    def margined_body_sticker(selected_template, serial_number_list, imei1_list, imei2_list, model_list):
+    def margined_body_sticker(context, selected_template, dataset):
 
         def draw_text(c, x, y, text, font_size, font="Helvetica" ):
             c.setFont(font, font_size*2)
@@ -276,7 +350,7 @@ def router_body_stickers():
 
             # Function to draw a sticker
         
-        def draw_sticker(c, x, y, width, height, sn, imei, imei2, model_number):
+        def draw_sticker(c, x, y, width, height, sn, imei1=None, imei2=None, model_number=None):
             
             # STICKER FRAME
             c.line(x, y, x, y + 40 * mm + 3.5 * mm)  # Left border
@@ -293,56 +367,54 @@ def router_body_stickers():
             draw_barcode(c, x + 1, y + 83, sn, -90)
 
             
-
-            router_data = {}
-            for key, value in selected_template.items():
-                if 'excel' in value.strip().lower().replace(" ",""):
-                    print(value)
-                    if key == 'imei1':
-                        if imei != 0:
-                            router_data[key] = f"IMEI 1 : {imei}"
-                        else:
-                            router_data[key] = 0
-                    elif key == 'imei2':
-                        if imei2 != 0:
-                            router_data[key] = f"IMEI 2 : {imei2}"
-                        else:
-                            router_data[key] = 0
-                    elif key == 'model':
-                        router_data[key] = f"Model : {model_number}"
-                else:
-                    router_data[key] = value
-
-
-            print(router_data)
-            print("\nRouter Data Len : ",len(router_data))
             
-            if "CR12" in router_data["model"]:
+            modified_template_data = {}
+            for key, value in selected_template.items():
+                # if 'excel' in value.strip().lower().replace(" ",""):
+                #     print(value)
+                if key == 'imei1':
+                    if imei1 != 0:
+                        modified_template_data[key] = f"IMEI 1 : {imei1}"
+                    else:
+                        modified_template_data[key] = 0
+                elif key == 'imei2':
+                    if imei2 != 0:
+                        modified_template_data[key] = f"IMEI 2 : {imei2}"
+                    else:
+                        modified_template_data[key] = 0
+                if context == "SN_IMEI_MODEL_TEMPLATE":
+                    if key == 'model':
+                        modified_template_data[key] = f"Model : {model_number}"
+                else:
+                    modified_template_data[key] = value
+
+
+            if "CR12" in modified_template_data["model"]:
                 font = 3
                 align_x = x + 14 * mm # 14 default
                 align_y = y + 27.5 * mm # 26 default
                 space = 0
 
-            elif "CR11" in router_data["model"]:
+            elif "CR11" in modified_template_data["model"]:
                 font = 3
                 align_x = x + 14 * mm # 14 default
                 align_y = y + 26 * mm # 26 default
                 space = 0
             
-            elif "CR10" in router_data["model"]:
+            elif "CR10" in modified_template_data["model"]:
                 font = 3
                 align_x = x + 14 * mm # 14 default
                 align_y = y + 24.5 * mm # 26 default
                 space = 0
             
-            elif len(router_data) == 6 :
+            elif len(modified_template_data) == 6 :
                 font = 3
                 align_x = x + 14 * mm # 14 default
                 align_y = y + 30 * mm # 26 default
                 space = 0
             
             else:
-                print(f"{len(router_data)} Wrong size dictionary passed, improve code, call Argho lol!")
+                print(f"{len(modified_template_data)} Wrong size dictionary passed, improve code, call Argho lol!")
 
             #TOP LINE
             c.line(align_x - 1.5 * mm, align_y + 5 * mm, x + width - 10, align_y + 5 * mm )  # Top border
@@ -355,18 +427,17 @@ def router_body_stickers():
             draw_text(c, align_x + 12 * mm, align_y + 7 * mm, text2, head_font_size)
 
             
-            for key, value in router_data.items():
+            for key, value in modified_template_data.items():
                 if key == 'title':
                     draw_text(c, align_x, space + align_y, f"{value}", font + 2 , font='Helvetica-Bold')
                     space = space - 10
                 elif key in ['bands1','bands2']:
                     draw_text(c, align_x + 2, space + align_y - 1.55 * mm, f"{value}", font, font='Helvetica-Bold')
                     space = space - 10
-                elif "imei" in key and router_data[key] != 0:
-                    print("Black Sheep ", router_data[key])
+                elif "imei" in key and modified_template_data[key] != 0:
                     draw_text(c, align_x + 2, space + align_y - 1.55 * mm , f"{value}", font + 1)
                     space = space - 10
-                elif router_data[key] != 0:
+                elif modified_template_data[key] != 0:
                     draw_text(c, align_x + 2, space + align_y - 1.55 * mm , f"{value}", font + 1)
                     space = space - 10
 
@@ -382,6 +453,16 @@ def router_body_stickers():
 
 
 
+
+
+        serial_number_list = dataset['SN']    
+
+        if context == "SN_IMEI_MODEL_TEMPLATE":
+            imei1_list = dataset['IMEI1']
+            imei2_list = dataset['IMEI2']
+            model_list = dataset['MODEL']
+        
+            
 
         
         try:
@@ -417,16 +498,18 @@ def router_body_stickers():
 
             # Iterate over rows in the DataFrame
             for i in range(len(serial_number_list)):
+
                 sn = serial_number_list[i]
                 
-                imei1 = imei1_list[i]
-                model_number = model_list[i]
-                
-                try :
-                    imei2 = imei2_list[i]
-                except Exception:
-                    imei2 = 0
-                    pass
+                if context == "SN_IMEI_MODEL_TEMPLATE":
+                    imei1 = int(imei1_list[i])
+                    model_number = model_list[i]
+                    
+                    try :
+                        imei2 = int(imei2_list[i])
+                    except Exception:
+                        imei2 = 0
+                        pass
 
                 
                 # print(sn, " ", imei)
@@ -435,8 +518,11 @@ def router_body_stickers():
 
                 x = start_x + column * (sticker_width + margin + additional_space)
                 y = start_y - row_num * (sticker_height + 15 * mm)
-
-                draw_sticker(c, x , y, sticker_width, sticker_height, sn, imei1, imei2, model_number)
+                
+                if context == "SN_IMEI_MODEL_TEMPLATE":
+                    draw_sticker(c, x , y, sticker_width, sticker_height, sn, imei1, imei2, model_number)
+                else:
+                    draw_sticker(c, x , y, sticker_width, sticker_height, sn)
 
                 # Check if we need a new page
                 if (i + 1) % (stickers_per_row * rows_per_page) == 0:
@@ -451,13 +537,14 @@ def router_body_stickers():
 
             os.startfile(sticker_pdf_name)
 
-            print(f"Printing at {DOWNLOAD_DIR}{sticker_pdf_name}")
-            shutil.rmtree(BUFFER_DIR)
-        
+            print(f"\n{GREEN}PDF file created at {sticker_pdf_name}\n")
+            
+            delete_contents_of_directory(BUFFER_DIR)
+
         except KeyboardInterrupt:
             print()
-            print_banner("Rage Quit Inititated!! Deleteing ./bufferDEL folder.")
-            shutil.rmtree(BUFFER_DIR)
+            print_banner("Rage Quit Inititated!!")
+            delete_contents_of_directory(BUFFER_DIR)
             sys.exit(1)
 
 
@@ -495,6 +582,20 @@ def router_body_stickers():
                 | CRARM311736E8D |                 |                 | CR1011-A |
                 | CRARM311736E9D | 861942058188338 | 860965062571025 | CR1211-A |
                 +----------------+-----------------+-----------------+----------+\033[0m"""
+            
+        elif chosen_template == "SN_TEMPLATE":
+            
+            exampleData="""\033[33m
+                EXAMPLE DATA:-
+                
+                +----------------+
+                | SN             |
+                +----------------+
+                | CRARM311736E6D |
+                | CRARM311736E7D |
+                | CRARM311736E8D |
+                | CRARM311736E9D |
+                +----------------+\033[0m"""
 
 
 
@@ -503,7 +604,7 @@ def router_body_stickers():
             # Select the columns by name
             for column in excel_column_names_list:
                 # Replace empty values with '0' and convert to list
-                column_data[column] = df[column].fillna('0').tolist()
+                column_data[column] = df[column].fillna(0).tolist()
             return column_data
             
         except KeyError as ke:
@@ -636,42 +737,38 @@ def router_body_stickers():
     chosen_excel_file = chooseFile("./ExcelData\\")
 
 
-
-    # no_of_barcode = len(serial_number_list)
-
-
-
     if template_choice in ['1','2']:
 
+        context = "SN_MAC_TEMPLATE"
+
         excel_column_names_list = ['SN', 'WAN_MAC']
-        dataset = validate_N_list_Excel("SN_MAC_TEMPLATE", chosen_excel_file, excel_column_names_list)
+        dataset = validate_N_list_Excel(context, chosen_excel_file, excel_column_names_list)
 
         serial_number_list = dataset['SN']
-        wan_mac_list = dataset["WAN_MAC"]
 
-        no_of_barcode = len(serial_number_list)
-
-        pdf_path = create_stickers(selected_template, serial_number_list, wan_mac_list, no_of_barcode)
+        pdf_path = create_stickers(selected_template, serial_number_list, dataset)
         print()
-        print(f"{GREEN}Sticker PDF created: {pdf_path}{CEND}\n")
+        print(f"\n{GREEN}Sticker PDF created: {pdf_path}{CEND}\n")
 
     # Cellular router
-    if template_choice == '3':
-        margined_body_sticker(selected_template, serial_number_list, imei1_list, imei2_list, model_list)
+    elif template_choice == '3':
+
+        context = "SN_TEMPLATE"
+
+        excel_column_names_list = ['SN']
+        dataset = validate_N_list_Excel(context, chosen_excel_file, excel_column_names_list)
+
+        margined_body_sticker(context, selected_template, dataset)
     
     # cWAN
-    if template_choice == '4':
+    elif template_choice == '4':
+
+        context = "SN_IMEI_MODEL_TEMPLATE"
 
         excel_column_names_list = ['SN', 'IMEI1', 'IMEI2', 'MODEL']
-        dataset = validate_N_list_Excel("SN_IMEI_MODEL_TEMPLATE", chosen_excel_file, excel_column_names_list)
+        dataset = validate_N_list_Excel(context, chosen_excel_file, excel_column_names_list)
 
-        serial_number_list = dataset['SN']
-        imei1_list = dataset['IMEI1']
-        imei2_list = dataset['IMEI2']
-        model_list = dataset['MODEL']
-
-        margined_body_sticker(selected_template, serial_number_list, imei1_list, imei2_list, model_list)
-
+        margined_body_sticker(context, selected_template, dataset)
 
 
 
@@ -798,19 +895,6 @@ def router_box_stickers():
         return output_pdf
 
 
-
-    # # Load data from Excel file
-    # workbook = openpyxl.load_workbook('input.xlsx')
-    # sheet = workbook.active
-
-    # # Constants for positioning barcodes on the page
-    # x_start = 10 * mm  # Starting x position (20mm from the left margin)
-    # y_start = 235 * mm  # Starting y position (280mm from the bottom margin)
-    # x_increment = 0  # No horizontal spacing between barcodes in a row
-    # y_increment = 18 * mm  # Vertical spacing between barcodes (adjusted to make them closer)
-    # barcode_width = 90 * mm  # Barcode width
-    # barcode_height = 16 * mm  # Reduced barcode height
-
     location = chooseFile("./")
     # Load the Excel file into a pandas DataFrame
     # Make sure to replace 'your_excel_file.xlsx' with the actual path to your Excel file
@@ -889,6 +973,7 @@ def router_box_stickers():
 
 
     #'module_width': 10, 'module_height': 80, "font_size": 20*5, "text_distance": 28
+
 
 
 def router_carton_stickers():
@@ -1190,61 +1275,10 @@ def userInterface():
 
 
 
-def check_and_create_file():
-    print()
-    directory_list = [
-        './bufferDEL',
-        './Router_Body_Stickers_PDF', 
-        './Router_BOX_Stickers_PDF', 
-        './Router_BOX_Stickers_PDF'
-        ]
-
-    for directory in directory_list:
-        # Check if the directory exists
-        if not os.path.exists(directory):
-            try:
-                # Create the directory if it does not exist
-                os.makedirs(directory)
-                print(f"{BRIGHT_BLUE}Directory created: {directory}{CEND}")
-            except Exception as e:
-                print(f"{RED}An error occurred while creating directory {directory}: {e}{CEND}")
 
 
-def banner():
-    print(
-        f"""
-     ______________________________________________________________
-    /                                                              ==
-{RED}
-                                       |          
-                                      ...
-                                     .:+:-.
-                                    ..::*=:..      {CEND} {GREEN}
-                                ....::####:...
-                            ...-=::--*##=-::::=.
-                            ....::##############=. {CEND} {BRIGHT_BLUE}
-                    ........::#@#############@:.
-                    ..:%::=::::-#################%
-                ....::*#####=##################+ {CEND} {YELLOW}
-            ......:==%#########################. 
-            :::#:===+##########################-:.
-            .....:--%#########################:
-                ...::*#####-##################+ {CEND} {BRIGHT_BLUE}
-                    .:=::-::::=#################@
-                    .........:#+#############+:.
-                            ....::############%@+. {CEND} {GREEN}
-                            ..:-:::-###=:::..:.
-                                ....::###%:...
-                                    ...:-=:..      {CEND} {RED}
-                                    .:%::.
-                                      ...
-                                       |         {CEND} 
-            Stickey Business
-            - by Argho Sinha
-    \______________________________________________________________==
 
-"""
-    )
+# FUNCTION CALLING
 
 banner()
 
