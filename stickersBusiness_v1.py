@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import sys
@@ -382,9 +383,11 @@ def router_body_stickers():
                         modified_template_data[key] = f"IMEI 2 : {imei2}"
                     else:
                         modified_template_data[key] = 0
-                if context == "SN_IMEI_MODEL_TEMPLATE":
-                    if key == 'model':
+                elif key == 'model':
+                    if context == "SN_IMEI_MODEL_TEMPLATE":
                         modified_template_data[key] = f"Model : {model_number}"
+                    else:
+                        pass
                 else:
                     modified_template_data[key] = value
 
@@ -657,38 +660,9 @@ def router_body_stickers():
     
 
     def select_template(template_choice):
-        templates = {
-            # ODCP
-            '1': {
-                "commodity_text": "Outdoor Router",
-                "model_text": "Credo CR-3120-OD",
-                "input_text": "48V PoE",
-                "eanno": "0796554198316"
-                },
-            # cWAN
-            '2': {
-                "commodity_text": "CWAN",
-                "model_text": "CR3181-X",
-                "input_text": "240V AC",
-                },
-            # CR2020
-            '3': {
-                "title"   : "Cellular Router",
-                'model'   : "Model : CR2020",
-                'power'   : 'Power : 9-36V / 1.5A',
-                'version' : 'Version : V2A-S230E',
-                "bands1"  : "Bands : LTE FDD(B1/B3/B5/B8)",
-                "bands2"  : "       LTE TDD(B34/B38/B39/B40/B41)"
-            },
-            # cWAN Black Box
-            '4': {
-                "title"   : "cWAN",
-                'model'   : "Model : # FROM EXCEL #",
-                'power'   : 'Power : 12V / 1A',
-                "imei1"   : "IMEI1 : # FROM EXCEL #",
-                "imei2"   : "IMEI2 : # FROM EXCEL #",
-            },
-        }
+
+        with open('template.json', 'r') as file:
+            templates = json.load(file)
 
         if template_choice in templates:
             return templates[template_choice]

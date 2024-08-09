@@ -1,0 +1,31 @@
+{
+
+    "1": {
+        "commodity_text": "Outdoor Router",
+        "model_text": "Credo CR-3120-OD",
+        "input_text": "48V PoE",
+        "eanno": "0796554198316"
+        },
+
+    "2": {
+        "commodity_text": "CWAN",
+        "model_text": "CR3181-X",
+        "input_text": "240V AC"
+        },
+
+    "3": {
+        "title"   : "Cellular Router",
+        "model"   : "Model : CR2020",
+        "power"   : "Power : 9-36V / 1.5A",
+        "version" : "Version : V2A-S230E",
+        "bands1"  : "Bands : LTE FDD(B1/B3/B5/B8)",
+        "bands2"  : "       LTE TDD(B34/B38/B39/B40/B41)"
+    },
+    "4": {
+        "title"   : "cWAN",
+        "model"   : "Model : # FROM EXCEL #",
+        "power"   : "Power : 220V AC",
+        "imei1"   : "IMEI1 : # FROM EXCEL #",
+        "imei2"   : "IMEI2 : # FROM EXCEL #"
+    }
+}
