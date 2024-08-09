@@ -212,13 +212,22 @@ def router_body_stickers():
 
         no_of_barcode = len(serial_number_list)
 
-        if has_zero_in_sn or has_zero_in_wan_mac:
+        if has_zero_in_sn:
             print()
-            print("\x1b[31mValue missing or MAC vs Serial Number count mismatch!!\x1b[0m")
+            print("\x1b[31m ERROR : VALUES are MISSING in SN column!! \x1b[0m")
+            print()
             print("\x1b[31mPlease Check Excel Sheet and Try Again!!\x1b[0m")
-            print("\033[31mColumns are not properly named.\033[0m")
             print()
             sys.exit(1)
+        if has_zero_in_wan_mac:
+            print()
+            print("\x1b[31mERROR : VALUES are MISSING in WAN_MAC column!! \x1b[0m")
+            print()
+            print("\x1b[31mPlease Check Excel Sheet and Try Again!!\x1b[0m")
+            print()
+            sys.exit(1)
+
+
 
         commodity_text_print = selected_template['commodity_text']
         model_text_print = selected_template['model_text']
