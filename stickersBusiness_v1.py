@@ -199,9 +199,26 @@ def router_body_stickers():
     print()
 
     #code to make stickrs pdf
-    def create_stickers(selected_template, barcodes, wan_mac_list):
+    def create_stickers(selected_template, dataset):
 
-        no_of_barcode = len(wan_mac_list)
+        serial_number_list = dataset['SN']
+        wan_mac_list = dataset['WAN_MAC']
+
+        # Check if any value in serial_number_list is 0
+        has_zero_in_sn = any(sn == 0 for sn in serial_number_list)
+
+        # Check if any value in wan_mac_list is 0
+        has_zero_in_wan_mac = any(mac == 0 for mac in wan_mac_list)
+
+        no_of_barcode = len(serial_number_list)
+
+        if has_zero_in_sn or has_zero_in_wan_mac:
+            print()
+            print("\x1b[31mValue missing or MAC vs Serial Number count mismatch!!\x1b[0m")
+            print("\x1b[31mPlease Check Excel Sheet and Try Again!!\x1b[0m")
+            print("\033[31mColumns are not properly named.\033[0m")
+            print()
+            sys.exit(1)
 
         commodity_text_print = selected_template['commodity_text']
         model_text_print = selected_template['model_text']
@@ -226,12 +243,12 @@ def router_body_stickers():
             num_stickers_per_row = 2
             num_stickers_per_col = 3
             stickers_per_page = num_stickers_per_row * num_stickers_per_col
-            num_pages = (len(barcodes) + stickers_per_page - 1) // stickers_per_page
+            num_pages = (no_of_barcode + stickers_per_page - 1) // stickers_per_page
             i = 1
 
             for page in range(num_pages):
                 start_idx = page * stickers_per_page
-                end_idx = min((page + 1) * stickers_per_page, len(barcodes))
+                end_idx = min((page + 1) * stickers_per_page, no_of_barcode)
 
                 for idx, barcode_idx in enumerate(range(start_idx, end_idx)):
                     
@@ -621,19 +638,6 @@ def router_body_stickers():
 
 
 
-
-        # if len(serial_number_list) == len(wan_mac_list) and df[EXCEL_COLUMN_1_NAME].isnull().sum() == 0 and df[EXCEL_COLUMN_2_NAME].isnull().sum() == 0:
-        #     print()
-        #     return serial_number_list, wan_mac_list
-        # else:
-        #     print()
-        #     print("\x1b[31mValue missing or MAC vs Serial Number count mismatch!!\x1b[0m")
-        #     print("\x1b[31mPlease Check Excel Sheet and Try Again!!\x1b[0m")
-        #     print("\033[31mColumns are not properly named.\033[0m")
-        #     print()
-        #     print("\033[33mPlease have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like example below.\033[0m")
-        #     print(exampleData)
-        #     return
         
 
     def get_custom_input(selected_template):
@@ -718,9 +722,7 @@ def router_body_stickers():
         excel_column_names_list = ['SN', 'WAN_MAC']
         dataset = validate_N_list_Excel(context, chosen_excel_file, excel_column_names_list)
 
-        serial_number_list = dataset['SN']
-
-        pdf_path = create_stickers(selected_template, serial_number_list, dataset)
+        pdf_path = create_stickers(selected_template, dataset)
         print()
         print(f"\n{GREEN}Sticker PDF created: {pdf_path}{CEND}\n")
 
