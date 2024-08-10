@@ -141,7 +141,7 @@ def check_and_create_file():
         './Router_Body_Stickers_PDF', 
         './Router_BOX_Stickers_PDF', 
         './Router_Carton_Stickers_PDF',
-        './template_JSON',
+        './templates_JSON',
         './ExcelData',
         './ModelExcelData',
         ]
@@ -156,9 +156,9 @@ def check_and_create_file():
             except Exception as e:
                 print(f"{RED}An error occurred while creating directory {directory}: {e}{CEND}")
 
-        if directory == './template_JSON':
+        if directory == './templates_JSON':
 
-            BODY_tempalte = {
+            BODY_template = {
                 "1": {
                     "commodity_text": "Outdoor Router",
                     "model_text": "Credo CR-3120-OD",
@@ -209,10 +209,10 @@ def check_and_create_file():
                 "data7a": "info@tenetnetworks.com"
             }
 
-            with open(f"{directory}\\BODY_tempalte.json", 'w') as json_file:
-                json.dump(BODY_tempalte, json_file, indent=4)
+            with open(f"{directory}\\BODY_template.json", 'w') as json_file:
+                json.dump(BODY_template, json_file, indent=4)
 
-            with open(f"{directory}\\BOX_tempalte.json", 'w') as json_file:
+            with open(f"{directory}\\BOX_template.json", 'w') as json_file:
                 json.dump(BOX_template, json_file, indent=4)
             
         if directory == './ModelExcelData':
@@ -320,7 +320,7 @@ def check_and_create_file():
                     # Concatenate all DataFrames in the list into a single DataFrame
                     final_df = pd.concat(df_list, ignore_index=True)
                     # Print the final DataFrame
-                    print(final_df.to_string())
+                    
                     final_df.to_excel(file_path, index=False)
 
                 else:
@@ -571,8 +571,6 @@ def router_body_stickers():
             
             modified_template_data = {}
             for key, value in selected_template.items():
-                # if 'excel' in value.strip().lower().replace(" ",""):
-                #     print(value)
                 if key == 'imei1':
                     if imei1 != 0:
                         modified_template_data[key] = f"IMEI 1 : {imei1}"
@@ -701,7 +699,7 @@ def router_body_stickers():
 
             # Iterate over rows in the DataFrame
             for i in range(len(serial_number_list)):
-
+                start_time = time.time()
                 sn = serial_number_list[i]
                 
                 if context == "SN_IMEI_MODEL_TEMPLATE":
@@ -731,6 +729,7 @@ def router_body_stickers():
                 if (i + 1) % (stickers_per_row * rows_per_page) == 0:
                     c.showPage()
                     start_y = page_height - margin - sticker_height  # Reset y position
+                print_progress_bar(i+1, start_time, len(serial_number_list))
 
 
             # A4 dimensions in points
@@ -848,7 +847,7 @@ def router_body_stickers():
 
     def select_template(template_choice):
 
-        with open('./templates_JSON\\template.json', 'r') as file:
+        with open('templates_JSON\\BODY_template.json', 'r') as file:
             templates = json.load(file)
 
         if template_choice in templates:
@@ -1037,12 +1036,6 @@ def router_box_stickers():
                 
 
 
-
-                #removes barcode image file
-                os.remove(rcno_image_filename)
-                os.remove(macid_image_filename)
-                os.remove(ean_image_filename)
-
                 #ProgressBar
                 print_progress_bar(i, start_time, no_of_barcode)
                 i=i+1
@@ -1176,10 +1169,6 @@ def router_carton_stickers():
         #collecting data fomr excel file and storing it in an array
         val1 = []
         val2 = []
-
-        # Replace values
-        RSN_columnName = 'RSN' 
-        MAC_columnName = 'MAC'
 
         val1 = data['RSN'][1:]
         val2 = data['MAC'][1:]
