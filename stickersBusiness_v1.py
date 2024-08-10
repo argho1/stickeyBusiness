@@ -140,7 +140,7 @@ def check_and_create_file():
         './bufferDEL',
         './Router_Body_Stickers_PDF', 
         './Router_BOX_Stickers_PDF', 
-        './Router_BOX_Stickers_PDF'
+        './Router_Carton_Stickers_PDF'
         ]
 
     for directory in directory_list:
@@ -674,7 +674,7 @@ def router_body_stickers():
 
     def select_template(template_choice):
 
-        with open('template.json', 'r') as file:
+        with open('./templates_JSON\\template.json', 'r') as file:
             templates = json.load(file)
 
         if template_choice in templates:
@@ -763,13 +763,15 @@ def router_box_stickers():
 
 
     #code to make stickrs pdf
-    def create_stickers(data1, data2, data3, barcodes):
+    def create_stickers():
 
         start_time = time.time()
 
+        chosenName = input("Please enter a name for pdf file : ")
+        print()
         # Create a new PDF document
-        output_pdf = "router_box_stickers.pdf"
-        c = canvas.Canvas(output_pdf, pagesize=landscape(A4))
+        sticker_pdf_name = f"./Router_BOX_Stickers_PDF\\{chosenName}_stickers.pdf"
+        c = canvas.Canvas(sticker_pdf_name, pagesize=landscape(A4))
 
 
         # Set the size and position of the stickers
@@ -810,21 +812,21 @@ def router_box_stickers():
 
                 # Add the data as text inside the sticker
                 c.setFillColor(colors.black)
-                c.drawString(text_x, text_y, data1)
-                c.drawString(text_x+150, text_y, data1a)
-                c.drawString(text_x, text_y - 20, data2)
-                c.drawString(text_x+150, text_y - 20, data2a)
-                c.drawString(text_x, text_y - 40, data3)
-                c.drawString(text_x+150, text_y - 40, data3a)
-                c.drawString(text_x+160, text_y - 60, data31)
-                c.drawString(text_x, text_y - 85, data4)
-                c.drawString(text_x, text_y - 120, data5)
-                c.drawString(text_x+150, text_y - 120, data5a)
-                c.drawString(text_x+160, text_y - 140, data51)
-                c.drawString(text_x, text_y - 160, data6)
-                c.drawString(text_x+150, text_y - 160, data6a)
-                c.drawString(text_x, text_y - 180, data7)
-                c.drawString(text_x+150, text_y - 180, data7a)
+                c.drawString(text_x, text_y, data["data1"])
+                c.drawString(text_x+150, text_y, data["data1a"])
+                c.drawString(text_x, text_y - 20, data["data2"])
+                c.drawString(text_x+150, text_y - 20, data["data2a"])
+                c.drawString(text_x, text_y - 40, data["data3"])
+                c.drawString(text_x+150, text_y - 40, data["data3a"])
+                c.drawString(text_x+160, text_y - 60, data["data31"])
+                c.drawString(text_x, text_y - 85, data["data4"])
+                c.drawString(text_x, text_y - 120, data["data5"])
+                c.drawString(text_x+150, text_y - 120, data["data5a"])
+                c.drawString(text_x+160, text_y - 140, data["data51"])
+                c.drawString(text_x, text_y - 160, data["data6"])
+                c.drawString(text_x+150, text_y - 160, data["data6a"])
+                c.drawString(text_x, text_y - 180, data["data7"])
+                c.drawString(text_x+150, text_y - 180, data["data7a"])
 
                 # Generate and add barcode below data3
                 barcode_x = sticker_x * 10.8 + 50
@@ -833,7 +835,7 @@ def router_box_stickers():
                 
                 rcno = Code128(sn_list[barcode_idx], writer=ImageWriter())
                 rcno_image = rcno.render(writer_options={'module_width': 2.8, 'module_height': 80, "font_size": 20*4, "text_distance": 30, "quite_zone": 10})
-                rcno_image_filename = f"barcode_{page}_{idx}.png"
+                rcno_image_filename = f"./bufferDEL/barcode_{page}_{idx}.png"
                 rcno_image.save(rcno_image_filename)
                 #barcode_x for - to move left barecode_y to - to move down
                 c.drawImage(rcno_image_filename, barcode_x-25, barcode_y-10, width=150+70, height=55)
@@ -843,7 +845,7 @@ def router_box_stickers():
 
                 ean = Code128(eanno, writer=ImageWriter())
                 ean_image = ean.render(writer_options={'module_width': 4, 'module_height': 80, "font_size": 20*4, "text_distance": 30})
-                ean_image_filename = f"ean_barcode.png"
+                ean_image_filename = f"./bufferDEL/ean_barcode.png"
                 ean_image.save(ean_image_filename)
                 #barcode_x for - to move left barecode_y to - to move down
                 c.drawImage(ean_image_filename, barcode_x-25, barcode_y-70, width=150+70, height=55)
@@ -876,11 +878,14 @@ def router_box_stickers():
 
         # Save the PDF document
         c.save()
+        BUFFER_DIR = "./bufferDEL"
+        os.startfile(sticker_pdf_name)
+        delete_contents_of_directory(BUFFER_DIR)
 
-        return output_pdf
+        return sticker_pdf_name
 
 
-    location = chooseFile("./")
+    location = chooseFile("./ExcelData\\")
     # Load the Excel file into a pandas DataFrame
     # Make sure to replace 'your_excel_file.xlsx' with the actual path to your Excel file
     df = pd.read_excel(location, engine='openpyxl')  # Ensure you have 'openpyxl' installed for .xlsx files
@@ -919,23 +924,30 @@ def router_box_stickers():
 
     no_of_barcode = len(sn_list)
 
+    file_path = './templates_JSON/BOX_template.json'
 
-    # Static Data
-    data1 = 'Commodity'
-    data1a =': Credo CR-3120-OD Router'
-    data2 = 'Manufactured By'
-    data2a =': Tenet Networks Private Limited'
-    data3 = 'Net Quantity'
-    data3a=': 1 Outdoor Router + 1 Patch Cord'
-    data31= ' + 1 POE Adapter + 1 clamp'
-    data4 = 'Month & Year of Manufacture: 02/2024'
-    data5 = 'Office Address'
-    data5a=': A-541, Logix Technova Sector-132'
-    data51= 'Noida-201305 U.P. India'
-    data6 = 'Customer Care No.'
-    data6a=': +91 120-4165905'
-    data7 = 'Email ID'
-    data7a=': info@tenetnetworks.com'
+    # IMPORT JSON Data
+    with open(file_path, 'r') as file:
+        data = json.load(file)
+
+
+
+    # # Static Data
+    # data1 = 'Commodity'
+    # data1a =': Credo CR-3120-OD Router'
+    # data2 = 'Manufactured By'
+    # data2a =': Tenet Networks Private Limited'
+    # data3 = 'Net Quantity'
+    # data3a=': 1 Outdoor Router + 1 Patch Cord'
+    # data31= ' + 1 POE Adapter + 1 clamp'
+    # data4 = 'Month & Year of Manufacture: 02/2024'
+    # data5 = 'Office Address'
+    # data5a=': A-541, Logix Technova Sector-132'
+    # data51= 'Noida-201305 U.P. India'
+    # data6 = 'Customer Care No.'
+    # data6a=': +91 120-4165905'
+    # data7 = 'Email ID'
+    # data7a=': info@tenetnetworks.com'
     barcodes = sn_list
 
     #Iteration Count
@@ -949,15 +961,11 @@ def router_box_stickers():
 
 
     print()
-    pdf_path = create_stickers(data1, data2, data3, barcodes)
+    pdf_path = create_stickers()
 
     print()
-    print(f"Sticker PDF created: {pdf_path}")
+    print(f"\n{GREEN}Sticker PDF created at : {pdf_path}{CEND}")
 
-
-
-
-    #'module_width': 10, 'module_height': 80, "font_size": 20*5, "text_distance": 28
 
 
 
