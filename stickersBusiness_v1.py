@@ -215,7 +215,118 @@ def check_and_create_file():
             with open(f"{directory}\\BOX_tempalte.json", 'w') as json_file:
                 json.dump(BOX_template, json_file, indent=4)
             
+        if directory == './ModelExcelData':
 
+            data = {
+                "ODCP_BODY_MODEL_DATA.xlsx" : {
+
+                    "SN": ["RCRODBK01290301", "RCRODBK01290302", "RCRODBK01290303", "RCRODBK01290304"],
+                    "WAN_MAC":["44B59C0048BA", "44B59C0048BC", "44B59C0048BE", "44B59C0048C0"],
+                },
+
+                "cWAN_BlackBox_BODY_MODEL_DATA.xlsx" : {
+
+                    "SN":       ["CRARM311736E6D", "CRARM311736E7D", "CRARM311736E8D"],
+                    "IMEI1":    [ "861942058180001",  "861942058180002",  "0"],
+                    "IMEI2":    ["860965062570011", "0", "0"],
+                    "MODEL":    ["CR1211-A", "CR1111-A", "CR1011-A"]
+                },
+
+                "BOX_MODEL_DATA.xlsx": {
+                    "BOX 1": {
+                        "RSN": [
+                            "RCRODBK01290308", "RCRODBK01290336", "RCRODBK01290334", "RCRODBK01290328",
+                            "RCRODBK01290312", "RCRODBK01290494", "RCRODBK01290495", "RCRODBK01290320",
+                            "RCRODBK01290307", "RCRODBK01290323", "RCRODBK01290497", "RCRODBK01290304",
+                            "RCRODBK01290326", "RCRODBK01290332", "RCRODBK01290317", "RCRODBK01290318",
+                            "RCRODBK01290316", "RCRODBK01290305"
+                        ],
+                        "MAC": [
+                            "44:B5:9C:00:48:C8", "44:B5:9C:00:49:00", "44:B5:9C:00:48:FC", "44:B5:9C:00:48:F0",
+                            "44:B5:9C:00:48:D0", "44:B5:9C:00:4A:3C", "44:B5:9C:00:4A:3E", "44:B5:9C:00:48:E0",
+                            "44:B5:9C:00:48:C6", "44:B5:9C:00:48:E6", "44:B5:9C:00:4A:42", "44:B5:9C:00:48:C0",
+                            "44:B5:9C:00:48:EC", "44:B5:9C:00:48:F8", "44:B5:9C:00:48:DA", "44:B5:9C:00:48:DC",
+                            "44:B5:9C:00:48:D8", "44:B5:9C:00:48:C2"
+                        ]
+                    },
+                    "BOX 2": {
+                        "RSN": [
+                            "RCRODBK01290315", "RCRODBK01290306", "RCRODBK01290367", "RCRODBK01290343",
+                            "RCRODBK01290360", "RCRODBK01290428", "RCRODBK01290416", "RCRODBK01290363",
+                            "RCRODBK01290351", "RCRODBK01290319", "RCRODBK01290329", "RCRODBK01290302",
+                            "RCRODBK01290325", "RCRODBK01290420", "RCRODBK01290331", "RCRODBK01290392",
+                            "RCRODBK01290350", "RCRODBK01290418"
+                        ],
+                        "MAC": [
+                            "44:B5:9C:00:48:D6", "44:B5:9C:00:48:C4", "44:B5:9C:00:49:3E", "44:B5:9C:00:4A:C6",
+                            "44:B5:9C:00:49:30", "44:B5:9C:00:49:B8", "44:B5:9C:00:49:A0", "44:B5:9C:00:49:36",
+                            "44:B5:9C:00:49:1E", "44:B5:9C:00:48:DE", "44:B5:9C:00:48:F2", "44:B5:9C:00:48:BC",
+                            "44:B5:9C:00:48:EA", "44:B5:9C:00:49:A8", "44:B5:9C:00:48:F6", "44:B5:9C:00:49:70",
+                            "44:B5:9C:00:49:1C", "44:B5:9C:00:49:A4"
+                        ]
+                    },
+                    "BOX 3": {
+                        "RSN": [
+                            "RCRODBK01290335", "RCRODBK01290346", "RCRODBK01290301", "RCRODBK01290341",
+                            "RCRODBK01290311", "RCRODBK01290498", "RCRODBK01290359", "RCRODBK01290429",
+                            "RCRODBK01290309", "RCRODBK01290314", "RCRODBK01290357", "RCRODBK01290310",
+                            "RCRODBK01290348", "RCRODBK01290349", "RCRODBK01290324", "RCRODBK01290330",
+                            "RCRODBK01290496", "RCRODBK01290327"
+                        ],
+                        "MAC": [
+                            "44:B5:9C:00:48:FE", "44:B5:9C:00:49:14", "44:B5:9C:00:48:BA", "44:B5:9C:00:49:0A",
+                            "44:B5:9C:00:48:CE", "44:B5:9C:00:4A:44", "44:B5:9C:00:49:2E", "44:B5:9C:00:49:BA",
+                            "44:B5:9C:00:48:CA", "44:B5:9C:00:48:D4", "44:B5:9C:00:49:2A", "44:B5:9C:00:48:CC",
+                            "44:B5:9C:00:49:18", "44:B5:9C:00:49:1A", "44:B5:9C:00:48:E8", "44:B5:9C:00:48:F4",
+                            "44:B5:9C:00:4A:40", "44:B5:9C:00:48:EE"
+                        ]
+                    },
+                },
+            }
+
+            blank_rows = 3
+            df_list = []
+            for key, value in data.items():
+                file_path = f"{directory}\\{key}"
+                if key == 'BOX_MODEL_DATA.xlsx':
+                    # Iterate through the JSON data
+                    for section_name, section_data in value.items():
+                        # Convert each section to a DataFrame
+                        df = pd.DataFrame(section_data)
+
+                        # shift 1 column right
+                        df.insert(0, None, '')
+
+                        df.columns = [None] * len(df.columns)
+                        
+                        box_number = pd.DataFrame([[section_name,'','']], index=["Header"], columns=df.columns)
+
+                        headers = pd.DataFrame([['','RSN', 'MAC']], columns=df.columns)
+
+                        # Append the blank rows DataFrame to the list
+                        df_list.append(box_number)
+
+                        df_list.append(headers)
+
+                        # Append the section DataFrame to the list
+                        df_list.append(df)
+
+                        # Create a DataFrame of blank rows with the same columns
+                        blanks = pd.DataFrame("", index=range(blank_rows), columns=df.columns)
+                        
+                        # Append the blank rows DataFrame to the list
+                        df_list.append(blanks)
+
+                    # Concatenate all DataFrames in the list into a single DataFrame
+                    final_df = pd.concat(df_list, ignore_index=True)
+                    # Print the final DataFrame
+                    print(final_df.to_string())
+                    final_df.to_excel(file_path, index=False)
+
+                else:
+                    df = pd.DataFrame(data[key])
+
+                    df.to_excel(file_path, index=False)
 
 def banner():
     print(
@@ -1060,7 +1171,7 @@ def router_carton_stickers():
         #ctnno = input("Enter Carton No. : ")
 
         # Create PDF canvas
-        pdf = canvas.Canvas(f'Cartion_Box_Sticker_PDF/Box{ctnno}.pdf', pagesize=A4)
+        pdf = canvas.Canvas(f'.\Router_Carton_Sticker_PDF\\Box{ctnno}.pdf', pagesize=A4)
 
         #collecting data fomr excel file and storing it in an array
         val1 = []
@@ -1246,19 +1357,19 @@ def router_carton_stickers():
             print()
             exampleData = f"""{YELLOW}EXAMPLE DATA:-
 
-                        |******> For BOX 1 <******|
+                    |******> For BOX 1 <******|
 
-                +-------+-----------------+-------------------+
-                | BOX 1 |                 |                   |
-                +-------+-----------------+-------------------+
-                |  No.  | RSN             | MAC               |
-                +-------+-----------------+-------------------+
-                |   1   | RCRODBK01290308 | 44:B5:9C:00:48:C8 |
-                |   2   | RCRODBK01290336 | 44:B5:9C:00:49:00 |
-                |   3   | RCRODBK01290334 | 44:B5:9C:00:48:FC |
-                |   4   | RCRODBK01290328 | 44:B5:9C:00:48:F0 |
-                |   5   | RCRODBK01290312 | 44:B5:9C:00:48:D0 |
-                +-------+-----------------+-------------------+{CEND}"""
+            +-------+-----------------+-------------------+
+            | BOX 1 |                 |                   |
+            +-------+-----------------+-------------------+
+            |  No.  | RSN             | MAC               |
+            +-------+-----------------+-------------------+
+            |   1   | RCRODBK01290308 | 44:B5:9C:00:48:C8 |
+            |   2   | RCRODBK01290336 | 44:B5:9C:00:49:00 |
+            |   3   | RCRODBK01290334 | 44:B5:9C:00:48:FC |
+            |   4   | RCRODBK01290328 | 44:B5:9C:00:48:F0 |
+            |   5   | RCRODBK01290312 | 44:B5:9C:00:48:D0 |
+            +-------+-----------------+-------------------+{CEND}"""
 
             print(exampleData)   
             print()
