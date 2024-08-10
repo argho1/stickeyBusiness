@@ -1008,7 +1008,7 @@ def router_box_stickers():
                 
                 rcno = Code128(sn_list[barcode_idx], writer=ImageWriter())
                 rcno_image = rcno.render(writer_options={'module_width': 2.8, 'module_height': 80, "font_size": 20*4, "text_distance": 30, "quite_zone": 10})
-                rcno_image_filename = f"./bufferDEL/barcode_{page}_{idx}.png"
+                rcno_image_filename = f"./{BUFFER_DIR}/barcode_{page}_{idx}.png"
                 rcno_image.save(rcno_image_filename)
                 #barcode_x for - to move left barecode_y to - to move down
                 c.drawImage(rcno_image_filename, barcode_x-25, barcode_y-10, width=150+70, height=55)
@@ -1018,7 +1018,7 @@ def router_box_stickers():
 
                 ean = Code128(eanno, writer=ImageWriter())
                 ean_image = ean.render(writer_options={'module_width': 4, 'module_height': 80, "font_size": 20*4, "text_distance": 30})
-                ean_image_filename = f"./bufferDEL/ean_barcode.png"
+                ean_image_filename = f"./{BUFFER_DIR}/ean_barcode.png"
                 ean_image.save(ean_image_filename)
                 #barcode_x for - to move left barecode_y to - to move down
                 c.drawImage(ean_image_filename, barcode_x-25, barcode_y-70, width=150+70, height=55)
@@ -1028,7 +1028,7 @@ def router_box_stickers():
                 
                 macid = Code128(wan_mac_list[barcode_idx], writer=ImageWriter())
                 macid_image = macid.render(writer_options={'module_width': 2.8, 'module_height': 80, "font_size": 20*4, "text_distance": 30})
-                macid_image_filename = f"barcode1_{page}_{idx}.png"
+                macid_image_filename = f"{BUFFER_DIR}/barcode1_{page}_{idx}.png"
                 macid_image.save(macid_image_filename)
                 #barcode_x for - to move left barecode_y to - to move down
                 c.drawImage(macid_image_filename, barcode_x-25, barcode_y-130, width=150+70, height=55)
@@ -1045,7 +1045,7 @@ def router_box_stickers():
 
         # Save the PDF document
         c.save()
-        BUFFER_DIR = "./bufferDEL"
+        
         os.startfile(sticker_pdf_name)
         delete_contents_of_directory(BUFFER_DIR)
 
@@ -1053,6 +1053,8 @@ def router_box_stickers():
 
 
     location = chooseFile("./ExcelData\\")
+    BUFFER_DIR = "./bufferDEL"
+
     # Load the Excel file into a pandas DataFrame
     # Make sure to replace 'your_excel_file.xlsx' with the actual path to your Excel file
     df = pd.read_excel(location, engine='openpyxl')  # Ensure you have 'openpyxl' installed for .xlsx files
@@ -1164,7 +1166,7 @@ def router_carton_stickers():
         #ctnno = input("Enter Carton No. : ")
 
         # Create PDF canvas
-        pdf = canvas.Canvas(f'.\Router_Carton_Sticker_PDF\\Box{ctnno}.pdf', pagesize=A4)
+        pdf = canvas.Canvas(f'.\Router_Carton_Stickers_PDF\\Box{ctnno}.pdf', pagesize=A4)
 
         #collecting data fomr excel file and storing it in an array
         val1 = []
@@ -1309,7 +1311,7 @@ def router_carton_stickers():
         # Save the PDF
         print()
         pdf.save()
-        print(f"{GREEN}File saved at : Cartion_Box_Sticker_PDF/Box{ctnno}.pdf{CEND}\n")
+        print(f"{GREEN}File saved at : Router_Carton_Stickers_PDF/Box{ctnno}.pdf{CEND}\n")
         
 
     def readEXCELnValidate(df):
