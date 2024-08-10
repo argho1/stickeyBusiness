@@ -140,7 +140,10 @@ def check_and_create_file():
         './bufferDEL',
         './Router_Body_Stickers_PDF', 
         './Router_BOX_Stickers_PDF', 
-        './Router_Carton_Stickers_PDF'
+        './Router_Carton_Stickers_PDF',
+        './template_JSON',
+        './ExcelData',
+        './ModelExcelData',
         ]
 
     for directory in directory_list:
@@ -149,9 +152,69 @@ def check_and_create_file():
             try:
                 # Create the directory if it does not exist
                 os.makedirs(directory)
-                print(f"{BRIGHT_BLUE}Directory created: {directory}{CEND}")
+                print(f"{BRIGHT_BLUE}Missing directory created: {directory}{CEND}")
             except Exception as e:
                 print(f"{RED}An error occurred while creating directory {directory}: {e}{CEND}")
+
+        if directory == './template_JSON':
+
+            BODY_tempalte = {
+                "1": {
+                    "commodity_text": "Outdoor Router",
+                    "model_text": "Credo CR-3120-OD",
+                    "input_text": "48V PoE",
+                    "eanno": "0796554198316"
+                    },
+
+                "2": {
+                    "commodity_text": "CWAN",
+                    "model_text": "CR3181-X",
+                    "input_text": "240V AC"
+                    },
+
+                "3": {
+                    "title"   : "Cellular Router",
+                    "model"   : "Model : CR2020",
+                    "power"   : "Power : 9-36V / 1.5A",
+                    "version" : "Version : V2A-S230E",
+                    "bands1"  : "Bands : LTE FDD(B1/B3/B5/B8)",
+                    "bands2"  : "       LTE TDD(B34/B38/B39/B40/B41)"
+                },
+                
+                "4": {
+                    "title"   : "cWAN",
+                    "model"   : "Model : # FROM EXCEL #",
+                    "power"   : "Power : 220V AC",
+                    "imei1"   : "IMEI1 : # FROM EXCEL #",
+                    "imei2"   : "IMEI2 : # FROM EXCEL #"
+                }
+            }
+
+            BOX_template = {
+
+                "data1": "Commodity",
+                "data1a": "Credo CR-3120-OD Router",
+                "data2": "Manufactured By",
+                "data2a": "Tenet Networks Private Limited",
+                "data3": "Net Quantity",
+                "data3a": "1 Outdoor Router + 1 Patch Cord",
+                "data31": "1 POE Adapter + 1 clamp",
+                "data4": "Month & Year of Manufacture: 02/2024",
+                "data5": "Office Address",
+                "data5a": "A-541, Logix Technova Sector-132",
+                "data51": "Noida-201305 U.P. India",
+                "data6": "Customer Care No.",
+                "data6a": "+91 120-4165905",
+                "data7": "Email ID",
+                "data7a": "info@tenetnetworks.com"
+            }
+
+            with open(f"{directory}\\BODY_tempalte.json", 'w') as json_file:
+                json.dump(BODY_tempalte, json_file, indent=4)
+
+            with open(f"{directory}\\BOX_tempalte.json", 'w') as json_file:
+                json.dump(BOX_template, json_file, indent=4)
+            
 
 
 def banner():
@@ -904,7 +967,7 @@ def router_box_stickers():
     except KeyError as ke:
         print("\033[31mColumns are not properly named.\033[0m")
 
-        exampleData="""
+        exampleData=f"""{BRIGHT_YELLOW}
     EXAMPLE DATA:-
 
     +----------------+-------------------+
@@ -914,13 +977,14 @@ def router_box_stickers():
     | RCRODBK01290002| 44:B5:9C:00:46:55 |
     | RCRODBK01290003| 44:B5:9C:00:46:57 |
     | RCRODBK01290004| 44:B5:9C:00:46:59 |
-    +----------------+-------------------+"""
+    +----------------+-------------------+{CEND}"""
 
 
 
         print("Please have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like exaple below.")
         print(exampleData)
-        return
+        os.startfile(location)
+        sys.exit(1)
 
     no_of_barcode = len(sn_list)
 
@@ -1182,19 +1246,19 @@ def router_carton_stickers():
             print()
             exampleData = f"""{YELLOW}EXAMPLE DATA:-
 
-                    |******> For BOX 1 <******|
+                        |******> For BOX 1 <******|
 
-            +-------+-----------------+-------------------+
-            | BOX 1 |                 |                   |
-            +-------+-----------------+-------------------+
-            |  No.  | RSN             | MAC               |
-            +-------+-----------------+-------------------+
-            |   1   | RCRODBK01290308 | 44:B5:9C:00:48:C8 |
-            |   2   | RCRODBK01290336 | 44:B5:9C:00:49:00 |
-            |   3   | RCRODBK01290334 | 44:B5:9C:00:48:FC |
-            |   4   | RCRODBK01290328 | 44:B5:9C:00:48:F0 |
-            |   5   | RCRODBK01290312 | 44:B5:9C:00:48:D0 |
-            +-------+-----------------+-------------------+{CEND}"""
+                +-------+-----------------+-------------------+
+                | BOX 1 |                 |                   |
+                +-------+-----------------+-------------------+
+                |  No.  | RSN             | MAC               |
+                +-------+-----------------+-------------------+
+                |   1   | RCRODBK01290308 | 44:B5:9C:00:48:C8 |
+                |   2   | RCRODBK01290336 | 44:B5:9C:00:49:00 |
+                |   3   | RCRODBK01290334 | 44:B5:9C:00:48:FC |
+                |   4   | RCRODBK01290328 | 44:B5:9C:00:48:F0 |
+                |   5   | RCRODBK01290312 | 44:B5:9C:00:48:D0 |
+                +-------+-----------------+-------------------+{CEND}"""
 
             print(exampleData)   
             print()
