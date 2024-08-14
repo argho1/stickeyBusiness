@@ -35,16 +35,16 @@
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
+<!--         <li><a href="#prerequisites">Prerequisites</a></li> -->
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
-    <!-- <li><a href="#roadmap">Roadmap</a></li> -->
-    <!-- <li><a href="#contributing">Contributing</a></li> -->
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
+<!--     <li><a href="#acknowledgments">Acknowledgments</a></li> -->
   </ol>
 </details>
 
@@ -85,6 +85,17 @@ _Below is an example of how you can instruct your audience on installing and set
 3. Put excel files in ExcelData. Make sure to have to data formatted.
    Example Model Data can be found in ModelExcelData.
 
+4. These directories will be created.
+   ```sh
+        './bufferDEL',                    :  To store and auto delete barcode images.
+        './Router_Body_Stickers_PDF',     :  To store finished body stickers.
+        './Router_BOX_Stickers_PDF',      :  To store finished box stickers.
+        './Router_Carton_Stickers_PDF',   :  To store finished carton stickers.
+        './templates_JSON',               :  To make changes to the template.
+        './ExcelData',                    :  To put excel files which will be used to create stickers.
+        './ModelExcelData',               :  Contains model data that can be used to test the software, copy files from this folder                                                 and put it in ./ExcelData to use them. 
+   ```
+   
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
