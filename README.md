@@ -1,7 +1,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/argho1/stickeyBusiness/stickeyBusiness_logo.png">
-    <img src="stickeyBusiness_logo.png" alt="Logo" width="80" height="80">
+    <img src="stickeyBusiness_logo.png" alt="Logo" width="120" height="120">
   </a>
 
   <h3 align="center">Best-README-Template</h3>
