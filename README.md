@@ -3,7 +3,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/argho1/stickeyBusiness/img/stickeyBusiness_logo.png">
-    <img src="stickeyBusiness_logo.png" alt="Logo" width="180" height="180">
+    <img src="img/stickeyBusiness_logo.png" alt="Logo" width="180" height="180">
   </a>
 
   <h3 align="center">Stickey Business</h3>
