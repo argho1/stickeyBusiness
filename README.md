@@ -9,7 +9,7 @@
   <h3 align="center">Stickey Business</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    An awesome Sticker making software that takes input from excel columns and prints multiple stickers with barcode in PDF format.
     <br />
     <a href="https://github.com/argho1/stickeyBusiness"><strong>Explore the docs »</strong></a>
     <br />
