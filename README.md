@@ -2,7 +2,7 @@
 
 <br />
 <div align="center">
-  <a href="https://github.com/argho1/stickeyBusiness/stickeyBusiness_logo.png">
+  <a href="https://github.com/argho1/stickeyBusiness/img/stickeyBusiness_logo.png">
     <img src="stickeyBusiness_logo.png" alt="Logo" width="180" height="180">
   </a>
 
