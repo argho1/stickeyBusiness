@@ -93,7 +93,9 @@ _Below is an example of how you can instruct your audience on installing and set
         './Router_Carton_Stickers_PDF',   :  To store finished carton stickers.
         './templates_JSON',               :  To make changes to the template.
         './ExcelData',                    :  To put excel files which will be used to create stickers.
-        './ModelExcelData',               :  Contains model data that can be used to test the software, copy files from this folder                                                 and put it in ./ExcelData to use them. 
+        './ModelExcelData',               :  Contains model data that can be used to test the software,
+                                             copy files from this folder andput it in ./ExcelData to
+                                             use them. 
    ```
    
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
