@@ -54,7 +54,7 @@
 ## About The Project
 
 <a href="https://github.com/argho1/stickeyBusiness/stickeyBusiness_logo.png">
-  <img src="stickeyBusiness_screenshot.png" alt="Logo" >
+  <img src="img/stickeyBusiness_screenshot.png" alt="Logo" >
 </a>
 
 This project was created so users can insert Excel sheet and get a pdf with stickers.
