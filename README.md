@@ -1,3 +1,5 @@
+<a id="readme-top"></a>
+
 <br />
 <div align="center">
   <a href="https://github.com/argho1/stickeyBusiness/stickeyBusiness_logo.png">
@@ -51,7 +53,9 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+<a href="https://github.com/argho1/stickeyBusiness/stickeyBusiness_logo.png">
+  <img src="stickeyBusiness_screenshot.png" alt="Logo" >
+</a>
 
 This project was created so users can insert Excel sheet and get a pdf with stickers.
 
