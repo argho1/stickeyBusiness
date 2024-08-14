@@ -97,6 +97,10 @@ _Below is an example of how you can instruct your audience on installing and set
                                              copy files from this folder andput it in ./ExcelData to
                                              use them. 
    ```
+5. To run :
+   ```sh
+   python3 stickersBusiness_v1.py
+   ```
    
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
