@@ -358,7 +358,7 @@ def banner():
                                       ...
                                        |         {CEND} 
             Stickey Business
-            - by Argho Sinha
+            - by Argho Sinha                     *Verson : 1.1.0*
     \______________________________________________________________==
 
 """
@@ -589,25 +589,28 @@ def router_body_stickers():
                 else:
                     modified_template_data[key] = value
 
-
-            if "CR12" in modified_template_data["model"]:
+            # Aligns to the center for 2 IMEI
+            if modified_template_data["imei1"] != 0 and modified_template_data["imei2"] != 0:
                 font = 3
                 align_x = x + 14 * mm # 14 default
                 align_y = y + 27.5 * mm # 26 default
                 space = 0
 
-            elif "CR11" in modified_template_data["model"]:
+            # Aligns to the center for 1 IMEI
+            elif modified_template_data["imei1"] != 0 and modified_template_data["imei2"] == 0:
                 font = 3
                 align_x = x + 14 * mm # 14 default
                 align_y = y + 26 * mm # 26 default
                 space = 0
             
-            elif "CR10" in modified_template_data["model"]:
+            # Aligns to the center for 0 IMEI
+            elif modified_template_data["imei1"] == 0 and modified_template_data["imei2"] == 0:
                 font = 3
                 align_x = x + 14 * mm # 14 default
                 align_y = y + 24.5 * mm # 26 default
                 space = 0
             
+            # Aligns to the center for router data with 6 catagories
             elif len(modified_template_data) == 6 :
                 font = 3
                 align_x = x + 14 * mm # 14 default
