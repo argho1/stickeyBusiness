@@ -234,7 +234,7 @@ def check_and_create_file():
 
                 "BOX_MODEL_DATA.xlsx": {
                     "BOX 1": {
-                        "RSN": [
+                        "SN": [
                             "RCRODBK01290308", "RCRODBK01290336", "RCRODBK01290334", "RCRODBK01290328",
                             "RCRODBK01290312", "RCRODBK01290494", "RCRODBK01290495", "RCRODBK01290320",
                             "RCRODBK01290307", "RCRODBK01290323", "RCRODBK01290497", "RCRODBK01290304",
@@ -250,7 +250,7 @@ def check_and_create_file():
                         ]
                     },
                     "BOX 2": {
-                        "RSN": [
+                        "SN": [
                             "RCRODBK01290315", "RCRODBK01290306", "RCRODBK01290367", "RCRODBK01290343",
                             "RCRODBK01290360", "RCRODBK01290428", "RCRODBK01290416", "RCRODBK01290363",
                             "RCRODBK01290351", "RCRODBK01290319", "RCRODBK01290329", "RCRODBK01290302",
@@ -266,7 +266,7 @@ def check_and_create_file():
                         ]
                     },
                     "BOX 3": {
-                        "RSN": [
+                        "SN": [
                             "RCRODBK01290335", "RCRODBK01290346", "RCRODBK01290301", "RCRODBK01290341",
                             "RCRODBK01290311", "RCRODBK01290498", "RCRODBK01290359", "RCRODBK01290429",
                             "RCRODBK01290309", "RCRODBK01290314", "RCRODBK01290357", "RCRODBK01290310",
@@ -301,7 +301,7 @@ def check_and_create_file():
                         
                         box_number = pd.DataFrame([[section_name,'','']], index=["Header"], columns=df.columns)
 
-                        headers = pd.DataFrame([['','RSN', 'MAC']], columns=df.columns)
+                        headers = pd.DataFrame([['','SN', 'MAC']], columns=df.columns)
 
                         # Append the blank rows DataFrame to the list
                         df_list.append(box_number)
@@ -1015,7 +1015,7 @@ def router_box_stickers():
                 rcno_image.save(rcno_image_filename)
                 #barcode_x for - to move left barecode_y to - to move down
                 c.drawImage(rcno_image_filename, barcode_x-25, barcode_y-10, width=150+70, height=55)
-                c.drawString(barcode_x-70, barcode_y+18, f"RSN :")
+                c.drawString(barcode_x-70, barcode_y+18, f"SN :")
                 c.drawString(barcode_x-65, barcode_y+5, f"{i}")
 
 
@@ -1127,7 +1127,7 @@ def router_box_stickers():
 
 def router_carton_stickers():
 
-    # Function to process the Excel data and extract RSN and MAC for each box
+    # Function to process the Excel data and extract SN and MAC for each box
     def extract_sn_mac(excel_data):
         # Dictionary to hold the box data
         box_data = {}
@@ -1138,9 +1138,9 @@ def router_carton_stickers():
             # Check if any of the terms in boxvalue4search are in the first cell of the row
             if any(search_term in str(row[0]).lower().replace('.','').replace(" ","") for search_term in boxvalue4search):
                 current_box = str(row[0])  # Update the current box number
-                box_data[current_box] = {'RSN': [], 'MAC': []}
+                box_data[current_box] = {'SN': [], 'MAC': []}
             elif pd.notnull(row[1]) and pd.notnull(row[2]) and current_box:
-                box_data[current_box]['RSN'].append(row[1])
+                box_data[current_box]['SN'].append(row[1])
                 box_data[current_box]['MAC'].append(row[2])
 
         return box_data
@@ -1149,8 +1149,6 @@ def router_carton_stickers():
 
         start_time = time.time()
 
-        #ctnno = input("Enter Carton No. : ")
-
         # Create PDF canvas
         pdf = canvas.Canvas(f'.\Router_Carton_Stickers_PDF\\Box{ctnno}.pdf', pagesize=A4)
 
@@ -1158,7 +1156,7 @@ def router_carton_stickers():
         val1 = []
         val2 = []
 
-        val1 = data['RSN'][1:]
+        val1 = data['SN'][1:]
         val2 = data['MAC'][1:]
 
         no_of_barcode = len(val1)
@@ -1172,7 +1170,7 @@ def router_carton_stickers():
         if msn != "N/A":
             msn = (msn+ str(ctnno))
 
-        #no = int(input('Start RSN for this sheet : '))
+        #no = int(input('Start SN for this sheet : '))
 
         # Variables to track page count and barcode count
         page_count = 0
@@ -1246,7 +1244,7 @@ def router_carton_stickers():
 
             pdf.setFont("Helvetica-Bold", font_size-1)
             
-            ## RSN placed on the left side of the page. 
+            ## SN placed on the left side of the page. 
 
             # Insert barcode image into PDF
             rsn = Code128(val1[i], writer=ImageWriter())
@@ -1319,38 +1317,36 @@ def router_carton_stickers():
 
         print(f"\n{YELLOW}No. of BOXES detected : {len(box_numbers)}{CEND}\n")
 
-        msn = input("Enter MSN or Hit Enter to skip: ")
 
-        ean = input("Enter EAN or Hit Enter to skip: ")    
-
-        if not msn:
-            msn = "N/A"
-
-        if not ean:
-            ean = "N/A"
 
         try:
             # Now sort the box numbers in numeric order
             sorted_box_numbers = sorted(box_numbers)
             total_boxes = max(sorted_box_numbers)
 
-            startFrom = int(input("Enter Box No. to start printing from : "))  # Assuming we are starting from box 1 for the sake of demonstration
+            msn = input("Enter MSN or Hit Enter to skip: ")
+
+            ean = input("Enter EAN or Hit Enter to skip: ")    
+
+            if not msn:
+                msn = "N/A"
+
+            if not ean:
+                ean = "N/A"
+
+            startFrom = int(input("Enter Box Number to start printing from : ") or 1)  # Assuming we are starting from box 1 for the sake of demonstration
             
-            if not startFrom:
-                startFrom = 1
 
             searchValue = "box"
         
             for box_number in sorted_box_numbers:
-                # Convert back to the original box format if needed, or directly use box_number if applicable
-
                 if box_number >= startFrom:
                     print(f"\n{BRIGHT_BLUE}Printing sticker for {searchValue.upper()} {box_number}{CEND}")
                     cartonStickers(processed_data[f"{searchValue}{box_number}"], str(box_number), total_boxes, msn, ean)
         except (KeyError, ValueError) as ke:
             print()
             print(f"{RED}Data not formatted properly. Please format data as below :-{CEND}")
-            print(f"\n{RED}Value mismatch at {ke} {CEND}")
+            print(f"\n{RED}ERROR: {ke} {CEND}")
             print()
             exampleData = f"""{YELLOW}EXAMPLE DATA:-
 
@@ -1359,7 +1355,7 @@ def router_carton_stickers():
             +-------+-----------------+-------------------+
             | BOX 1 |                 |                   |
             +-------+-----------------+-------------------+
-            |       | RSN             | MAC               |
+            |       | SN              | MAC               |
             +-------+-----------------+-------------------+
             |   1   | RCRODBK01290308 | 44:B5:9C:00:48:C8 |
             |   2   | RCRODBK01290336 | 44:B5:9C:00:49:00 |
@@ -1382,7 +1378,18 @@ def router_carton_stickers():
 
     df = pd.read_excel(location)  # You would use the actual path to your Excel file
 
-    readEXCELnValidate(df)
+    # Convert DataFrame to a list of lists
+    data_with_empty_row = [df.columns.tolist()] + df.values.tolist()
+
+    # Insert an empty row at the beginning
+    data_with_empty_row.insert(0, [None] * len(df.columns))
+
+    # Convert back to DataFrame, setting the header to the second row (index 1)
+    df_with_empty_row_above_header = pd.DataFrame(data_with_empty_row)
+
+    print(df_with_empty_row_above_header)
+
+    readEXCELnValidate(df_with_empty_row_above_header)
 
 
 
