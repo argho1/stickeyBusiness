@@ -232,7 +232,7 @@ def check_and_create_file():
                     "MODEL":    ["CR1211-A", "CR1111-A", "CR1011-A"]
                 },
 
-                "BOX_MODEL_DATA.xlsx": {
+                "CARTON_MODEL_DATA.xlsx": {
                     "BOX 1": {
                         "SN": [
                             "RCRODBK01290308", "RCRODBK01290336", "RCRODBK01290334", "RCRODBK01290328",
@@ -288,7 +288,7 @@ def check_and_create_file():
             df_list = []
             for key, value in data.items():
                 file_path = f"{directory}\\{key}"
-                if key == 'BOX_MODEL_DATA.xlsx':
+                if key == 'CARTON_MODEL_DATA.xlsx':
                     # Iterate through the JSON data
                     for section_name, section_data in value.items():
                         # Convert each section to a DataFrame
