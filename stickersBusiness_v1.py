@@ -1169,7 +1169,8 @@ def router_carton_stickers():
         if int(ctnno) <= 9:
             ctnno = "0"+str(ctnno)
 
-        msn = (msn+ str(ctnno))
+        if msn != "N/A":
+            msn = (msn+ str(ctnno))
 
         #no = int(input('Start RSN for this sheet : '))
 
@@ -1225,21 +1226,21 @@ def router_carton_stickers():
             pdf.drawString(x2+400, y2, f"Carton No. : {ctnno} of {total_boxes}") #make dynamic value
             pdf.drawString(x2+480, y2-20, f"Qty : {no_of_barcode}")
 
+            if msn != "N/A":    
+                msn1 = Code128(msn, writer=ImageWriter())
+                msn_image = msn1.render(writer_options={'module_width': 4, 'module_height': 80, "font_size": 20*5, "text_distance": 40, "quite_zone": 10})
+                msn_image_filename = (f"./bufferDEL/msn_barcode.png")
+                msn_image.save(msn_image_filename)
+                pdf.drawImage(msn_image_filename, x2+310, y2-75, width=barcode_width, height=barcode_height)
+                pdf.drawString(x2+260, y2-50, f"MSN:")
 
-            msn1 = Code128(msn, writer=ImageWriter())
-            msn_image = msn1.render(writer_options={'module_width': 4, 'module_height': 80, "font_size": 20*5, "text_distance": 40, "quite_zone": 10})
-            msn_image_filename = (f"./bufferDEL/msn_barcode.png")
-            msn_image.save(msn_image_filename)
-            pdf.drawImage(msn_image_filename, x2+310, y2-75, width=barcode_width, height=barcode_height)
-            pdf.drawString(x2+260, y2-50, f"MSN:")
-
-
-            ean1 = Code128(ean, writer=ImageWriter())
-            ean_image = ean1.render(writer_options={'module_width': 4, 'module_height': 80, "font_size": 20*5, "text_distance": 40, "quite_zone": 10})
-            ean_image_filename = (f"./bufferDEL/ean_barcode.png")
-            ean_image.save(ean_image_filename)
-            pdf.drawImage(ean_image_filename, x2+310, y2-125, width=barcode_width, height=barcode_height)
-            pdf.drawString(x2+260, y2-100, f"EAN:")
+            if ean != "N/A":
+                ean1 = Code128(ean, writer=ImageWriter())
+                ean_image = ean1.render(writer_options={'module_width': 4, 'module_height': 80, "font_size": 20*5, "text_distance": 40, "quite_zone": 10})
+                ean_image_filename = (f"./bufferDEL/ean_barcode.png")
+                ean_image.save(ean_image_filename)
+                pdf.drawImage(ean_image_filename, x2+310, y2-125, width=barcode_width, height=barcode_height)
+                pdf.drawString(x2+260, y2-100, f"EAN:")
 
 
 
@@ -1253,7 +1254,7 @@ def router_carton_stickers():
             rsn_image_filename = (f"./bufferDEL/rsn_barcode_{i}.png")
             rsn_image.save(rsn_image_filename)
             pdf.drawImage(rsn_image_filename, x, y-18, width=barcode_width, height=barcode_height+12)
-            pdf.drawString(x-35, y+25, f"RSN:")
+            pdf.drawString(x-35, y+25, f"SN:")
             #pdf.drawString(x-30, y+15, f"{no}")
 
 
@@ -1314,20 +1315,39 @@ def router_carton_stickers():
         # Extract box numbers and convert them to integers for proper numeric sorting
         box_numbers = [int(''.join(filter(str.isdigit, box))) for box in processed_data.keys()]
 
-        print(f"\n{YELLOW}No. of BOXES detected : {len(box_numbers)}{CEND}")
+        
 
-        # Now sort the box numbers in numeric order
-        sorted_box_numbers = sorted(box_numbers)
-        total_boxes = max(sorted_box_numbers)
+        print(f"\n{YELLOW}No. of BOXES detected : {len(box_numbers)}{CEND}\n")
+
+        msn = input("Enter MSN or Hit Enter to skip: ")
+
+        ean = input("Enter EAN or Hit Enter to skip: ")    
+
+        if not msn:
+            msn = "N/A"
+
+        if not ean:
+            ean = "N/A"
 
         try:
+            # Now sort the box numbers in numeric order
+            sorted_box_numbers = sorted(box_numbers)
+            total_boxes = max(sorted_box_numbers)
+
+            startFrom = int(input("Enter Box No. to start printing from : "))  # Assuming we are starting from box 1 for the sake of demonstration
+            
+            if not startFrom:
+                startFrom = 1
+
+            searchValue = "box"
+        
             for box_number in sorted_box_numbers:
                 # Convert back to the original box format if needed, or directly use box_number if applicable
-                box_key = f"{searchValue}{box_number}"  # Adjust format as necessary based on how your keys are structured
+
                 if box_number >= startFrom:
-                    print(f"\n{BRIGHT_BLUE}Printing sticker for {searchValue}{box_number}{CEND}")
+                    print(f"\n{BRIGHT_BLUE}Printing sticker for {searchValue.upper()} {box_number}{CEND}")
                     cartonStickers(processed_data[f"{searchValue}{box_number}"], str(box_number), total_boxes, msn, ean)
-        except KeyError as ke:
+        except (KeyError, ValueError) as ke:
             print()
             print(f"{RED}Data not formatted properly. Please format data as below :-{CEND}")
             print(f"\n{RED}Value mismatch at {ke} {CEND}")
@@ -1339,7 +1359,7 @@ def router_carton_stickers():
             +-------+-----------------+-------------------+
             | BOX 1 |                 |                   |
             +-------+-----------------+-------------------+
-            |  No.  | RSN             | MAC               |
+            |       | RSN             | MAC               |
             +-------+-----------------+-------------------+
             |   1   | RCRODBK01290308 | 44:B5:9C:00:48:C8 |
             |   2   | RCRODBK01290336 | 44:B5:9C:00:49:00 |
@@ -1350,6 +1370,7 @@ def router_carton_stickers():
 
             print(exampleData)   
             print()
+            sys.exit(1)
 
 
     # Load the entire workbook once, instead of in the loop
@@ -1359,16 +1380,17 @@ def router_carton_stickers():
 
     print()
 
-    msn = input("Enter MSN : ")
-    ean = input("Enter EAN : ")    
-
-    startFrom = int(input("Enter Box No. to start printing from : "))  # Assuming we are starting from box 1 for the sake of demonstration
-
-    searchValue = 'box'
-
     df = pd.read_excel(location)  # You would use the actual path to your Excel file
 
     readEXCELnValidate(df)
+
+
+
+    
+
+
+
+
 
 
 
