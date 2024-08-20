@@ -364,8 +364,55 @@ def banner():
 """
     )
 
+def showExcelTemplate(template_choice):
+    template_choice = int(template_choice)
+
+    if template_choice in [1,2]:
+        
+        exampleData="""\033[33m
+            EXAMPLE DATA:-
+
+            +----------------+-------------------+
+            | SN             | WAN_MAC           |
+            +----------------+-------------------+
+            | RCRODBK01290001| 44:B5:9C:00:46:53 |
+            | RCRODBK01290002| 44:B5:9C:00:46:55 |
+            | RCRODBK01290003| 44:B5:9C:00:46:57 |
+            | RCRODBK01290004| 44:B5:9C:00:46:59 |
+            +----------------+-------------------+\033[0m"""
+
+    elif template_choice == 3:
+        
+        exampleData="""\033[33m
+            EXAMPLE DATA:-
+            
+            +----------------+
+            | SN             |
+            +----------------+
+            | CRARM311736E6D |
+            | CRARM311736E7D |
+            | CRARM311736E8D |
+            | CRARM311736E9D |
+            +----------------+\033[0m"""
+
+    elif template_choice == 4:
+        
+        exampleData="""\033[33m
+            EXAMPLE DATA:-
+            
+            +----------------+-----------------+-----------------+----------+
+            | SN             | IMEI1           | IMEI2           | MODEL    |
+            +----------------+-----------------+-----------------+----------+
+            | CRARM311736E6D | 861942058188336 | 860965062571024 | CR1211-A |
+            | CRARM311736E7D | 861942058188337 |                 | CR1111-A |
+            | CRARM311736E8D |                 |                 | CR1011-A |
+            | CRARM311736E9D | 861942058188338 | 860965062571025 | CR1211-A |
+            +----------------+-----------------+-----------------+----------+\033[0m"""
 
 
+    print(f"\n{BRIGHT_BLUE}Please have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like exaple below.{CEND}")
+    print(exampleData)
+    # os.startfile(location)
 
 
 
@@ -882,7 +929,7 @@ def router_body_stickers():
                 print("\t\t\t\t",value)
             
             print("\nWould you like to edit the template?")
-            if input("\nDo you edit the template (y/n): ").lower() != 'n':
+            if input("\nHit Enter for yes and n for no.. (y/n): ").lower() != 'n':
                 selected_template = get_custom_input(selected_template)
                 # Example of breaking the loop or continuing based on some condition
                 if input("\nDo you want to continue? (y/n): ").lower() != 'n':
@@ -895,7 +942,9 @@ def router_body_stickers():
     #directory to store barcode, deleted when program done or when ctrl+c presses
     BUFFER_DIR = "./bufferDEL"
     DOWNLOAD_DIR = "./Router_Body_Stickers_PDF\\"
-    
+
+    # Show how the formatting should be according to choice.
+    showExcelTemplate(template_choice)
 
     chosen_excel_file = chooseFile("./ExcelData\\")
 
