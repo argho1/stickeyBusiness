@@ -525,7 +525,8 @@ def router_body_stickers():
                     
                     macid = Code128(str(wan_mac_list[barcode_idx]), writer=ImageWriter())
                     macid_image = macid.render(writer_options={'module_width': 2, 'module_height': 80, "font_size": 30*2, "text_distance": 25, "quite_zone": 10})
-                    macid_image_filename = f"./bufferDEL/WanMac_barcode_{wan_mac_list[barcode_idx]}.png"
+                    filtered_wan_mac_list = re.sub(r'[^A-Za-z0-9]+', '', wan_mac_list[barcode_idx])
+                    macid_image_filename = f"./bufferDEL/WanMac_barcode_{filtered_wan_mac_list}.png"
                     macid_image.save(macid_image_filename)
                     # barcode_x for - to move left barecode_y to - to move down
                     c.drawImage(macid_image_filename, barcode_x-25, barcode_y-85, width=150, height=45)
