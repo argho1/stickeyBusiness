@@ -160,14 +160,14 @@ def check_and_create_file():
 
             BODY_template = {
                 "1": {
-                    "commodity_text": "Outdoor Router",
+                    "title": "Outdoor Router",
                     "model_text": "Credo CR-3120-OD",
                     "input_text": "48V PoE",
                     "eanno": "0796554198316"
                     },
 
                 "2": {
-                    "commodity_text": "CWAN",
+                    "title": "CWAN",
                     "model_text": "CR3181-X",
                     "input_text": "240V AC"
                     },
@@ -208,12 +208,14 @@ def check_and_create_file():
                 "data7": "Email ID",
                 "data7a": "info@tenetnetworks.com"
             }
+            
+            if not os.path.exists(f'{directory}\\BODY_template.json'):
+                with open(f"{directory}\\BODY_template.json", 'w') as json_file:
+                    json.dump(BODY_template, json_file, indent=4)
 
-            with open(f"{directory}\\BODY_template.json", 'w') as json_file:
-                json.dump(BODY_template, json_file, indent=4)
-
-            with open(f"{directory}\\BOX_template.json", 'w') as json_file:
-                json.dump(BOX_template, json_file, indent=4)
+            if not os.path.exists(f"{directory}\\BOX_template.json"):
+                with open(f"{directory}\\BOX_template.json", 'w') as json_file:
+                    json.dump(BOX_template, json_file, indent=4)
             
         if directory == './ModelExcelData':
 
@@ -450,7 +452,7 @@ def router_body_stickers():
 
 
 
-        commodity_text_print = selected_template['commodity_text']
+        title_print = selected_template['title']
         model_text_print = selected_template['model_text']
         input_text_print = selected_template['input_text']
 
@@ -503,7 +505,7 @@ def router_body_stickers():
 
                     # Add the data as text inside the sticker
                     c.setFillColor(colors.black)
-                    c.drawString(text_x + 18, text_y - 16, f"Commodity : {commodity_text_print}")
+                    c.drawString(text_x + 18, text_y - 16, f"Commodity : {title_print}")
                     c.drawString(text_x + 18, text_y - 28, f"Model : {model_text_print}")
                     c.drawString(text_x + 18, text_y - 40, f"Input : {input_text_print}")
 
@@ -567,7 +569,7 @@ def router_body_stickers():
             sys.exit(1)
 
 
-    def margined_body_sticker(context, selected_template, dataset):
+    def margined_body_sticker(context, selected_template, dataset, chosen_template):
 
         def draw_text(c, x, y, text, font_size, font="Helvetica" ):
             c.setFont(font, font_size*2)
@@ -632,37 +634,39 @@ def router_body_stickers():
                     if context == "SN_IMEI_MODEL_TEMPLATE":
                         modified_template_data[key] = f"Model : {model_number}"
                     else:
-                        pass
+                        modified_template_data[key] = value
                 else:
                     modified_template_data[key] = value
 
-            # Aligns to the center for 2 IMEI
-            if modified_template_data["imei1"] != 0 and modified_template_data["imei2"] != 0:
-                font = 3
-                align_x = x + 14 * mm # 14 default
-                align_y = y + 27.5 * mm # 26 default
-                space = 0
+            print(f"dd {modified_template_data}")
 
-            # Aligns to the center for 1 IMEI
-            elif modified_template_data["imei1"] != 0 and modified_template_data["imei2"] == 0:
-                font = 3
-                align_x = x + 14 * mm # 14 default
-                align_y = y + 26 * mm # 26 default
-                space = 0
-            
-            # Aligns to the center for 0 IMEI
-            elif modified_template_data["imei1"] == 0 and modified_template_data["imei2"] == 0:
-                font = 3
-                align_x = x + 14 * mm # 14 default
-                align_y = y + 24.5 * mm # 26 default
-                space = 0
-            
             # Aligns to the center for router data with 6 catagories
-            elif len(modified_template_data) == 6 :
+            if chosen_template == "3" :
                 font = 3
                 align_x = x + 14 * mm # 14 default
                 align_y = y + 30 * mm # 26 default
                 space = 0
+            elif  chosen_template == "4":
+                # Aligns to the center for 2 IMEI
+                if modified_template_data["imei1"] != 0 and modified_template_data["imei2"] != 0:
+                    font = 3
+                    align_x = x + 14 * mm # 14 default
+                    align_y = y + 27.5 * mm # 26 default
+                    space = 0
+
+                # Aligns to the center for 1 IMEI
+                elif modified_template_data["imei1"] != 0 and modified_template_data["imei2"] == 0:
+                    font = 3
+                    align_x = x + 14 * mm # 14 default
+                    align_y = y + 26 * mm # 26 default
+                    space = 0
+                
+                # Aligns to the center for 0 IMEI
+                elif modified_template_data["imei1"] == 0 and modified_template_data["imei2"] == 0:
+                    font = 3
+                    align_x = x + 14 * mm # 14 default
+                    align_y = y + 24.5 * mm # 26 default
+                    space = 0
             
             else:
                 print(f"{len(modified_template_data)} Wrong size dictionary passed, improve code, call Argho lol!")
@@ -679,6 +683,7 @@ def router_body_stickers():
 
             
             for key, value in modified_template_data.items():
+                print(f"dd1 : {key}")
                 if key == 'title':
                     draw_text(c, align_x, space + align_y, f"{value}", font + 2 , font='Helvetica-Bold')
                     space = space - 10
@@ -948,7 +953,7 @@ def router_body_stickers():
 
     chosen_excel_file = chooseFile("./ExcelData\\")
 
-
+    # 
     if template_choice in ['1','2']:
 
         context = "SN_MAC_TEMPLATE"
@@ -968,7 +973,7 @@ def router_body_stickers():
         excel_column_names_list = ['SN']
         dataset = validate_N_list_Excel(context, chosen_excel_file, excel_column_names_list)
 
-        margined_body_sticker(context, selected_template, dataset)
+        margined_body_sticker(context, selected_template, dataset, template_choice)
     
     # cWAN
     elif template_choice == '4':
@@ -978,7 +983,7 @@ def router_body_stickers():
         excel_column_names_list = ['SN', 'IMEI1', 'IMEI2', 'MODEL']
         dataset = validate_N_list_Excel(context, chosen_excel_file, excel_column_names_list)
 
-        margined_body_sticker(context, selected_template, dataset)
+        margined_body_sticker(context, selected_template, dataset, template_choice)
 
 
 
@@ -995,7 +1000,7 @@ def router_box_stickers():
         chosenName = input("Please enter a name for pdf file : ")
         print()
         # Create a new PDF document
-        sticker_pdf_name = f"./Router_BOX_Stickers_PDF\\{chosenName}_stickers.pdf"
+        sticker_pdf_name = f"./Router_BOX_Stickers_PDF\\{chosenName}_BOX_stickers.pdf"
         c = canvas.Canvas(sticker_pdf_name, pagesize=landscape(A4))
 
 
@@ -1467,21 +1472,21 @@ def userInterface():
             print()
             print("0 to EXIT")
             print()
-            choice = int(input("Enter Choice : "))
+            choice = (input("Enter Choice : "))
             print()
-            if choice == 1:
+            if choice == '1':
                 router_body_stickers()
                 continue
 
-            if choice == 2:
+            if choice == '2':
                 router_box_stickers()
                 continue
 
-            if choice == 3:
+            if choice == '3':
                 router_carton_stickers()
                 continue
 
-            if choice == 0:
+            if choice == '0':
                 break
 
             else:
