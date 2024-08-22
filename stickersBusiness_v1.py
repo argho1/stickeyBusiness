@@ -108,6 +108,30 @@ def delete_contents_of_directory(directory):
         except Exception as e:
             print(f"Failed to delete {item_path}. Reason: {e}")
 
+def user_edits_json(selected_template):
+
+    edited_template = {}
+    for key, value in selected_template.items():
+        
+        if 'excel' not in value.strip().lower().replace(" ",""):
+            print("\nDefault : ", str(value))
+            userInput = input("\nEnter data or Hit enter to select default data :")
+            
+            if userInput == "":
+                edited_template[key] = value
+            else:
+                edited_template[key] = userInput
+        else:
+            edited_template[key] = value
+
+    print()
+    print(f"{BRIGHT_BLUE}Below is the edited data:\n{CEND}")
+    for key, value in edited_template.items():
+        print("\t\t\t\t",f"{BRIGHT_YELLOW}{value}{CEND}")
+
+    return edited_template 
+
+
 # Function to print the progress bar and estimate time of completion
 def print_progress_bar(page, start_time, total_pages):
     # Current progress
@@ -191,24 +215,32 @@ def check_and_create_file():
             }
 
             BOX_template = {
-
-                "data1": "Commodity",
+                "data1": "Commodity : ",
                 "data1a": "Credo CR-3120-OD Router",
-                "data2": "Manufactured By",
+                "data2": "Manufactured By : ",
                 "data2a": "Tenet Networks Private Limited",
-                "data3": "Net Quantity",
+                "data3": "Net Quantity : ",
                 "data3a": "1 Outdoor Router + 1 Patch Cord",
                 "data31": "1 POE Adapter + 1 clamp",
-                "data4": "Month & Year of Manufacture: 02/2024",
-                "data5": "Office Address",
+                "data4": "Month & Year of Manufacture : 02/2024",
+                "data5": "Office Address : ",
                 "data5a": "A-541, Logix Technova Sector-132",
                 "data51": "Noida-201305 U.P. India",
-                "data6": "Customer Care No.",
+                "data6": "Customer Care No. : ",
                 "data6a": "+91 120-4165905",
-                "data7": "Email ID",
+                "data7": "Email ID : ",
                 "data7a": "info@tenetnetworks.com"
             }
             
+            CARTON_template = {
+                "commodity" : "Commodity : Credo CR-3120-OD",
+                "color" : "Color : White",
+                "po" : "PO : I03/450055718",
+                "date" : "Date : 02/2024",
+                "oneBox_Gross_Weight" : "1.241",
+                "oneBox_Net_Weight" : "1.016"
+            }
+
             if not os.path.exists(f'{directory}\\BODY_template.json'):
                 with open(f"{directory}\\BODY_template.json", 'w') as json_file:
                     json.dump(BODY_template, json_file, indent=4)
@@ -216,6 +248,10 @@ def check_and_create_file():
             if not os.path.exists(f"{directory}\\BOX_template.json"):
                 with open(f"{directory}\\BOX_template.json", 'w') as json_file:
                     json.dump(BOX_template, json_file, indent=4)
+            
+            if not os.path.exists(f"{directory}\\CARTON_template.json"):
+                with open(f"{directory}\\CARTON_template.json", 'w') as json_file:
+                    json.dump(CARTON_template, json_file, indent=4)
             
         if directory == './ModelExcelData':
 
@@ -874,31 +910,6 @@ def router_body_stickers():
 
 
 
-        
-
-    def get_custom_input(selected_template):
-
-        edited_template = {}
-        for key, value in selected_template.items():
-            
-            if 'excel' not in value.strip().lower().replace(" ",""):
-                print("\nDefault : ", str(value))
-                userInput = input("\nEnter data or Hit enter to select default data :")
-                
-                if userInput == "":
-                    edited_template[key] = value
-                else:
-                    edited_template[key] = userInput
-            else:
-                edited_template[key] = value
-
-        print()
-        print(f"{BRIGHT_BLUE}Below is the edited data:\n{CEND}")
-        for key, value in edited_template.items():
-            print("\t\t\t\t",f"{BRIGHT_YELLOW}{value}{CEND}")
-
-        return edited_template 
-    
 
     def select_template(template_choice):
 
@@ -935,7 +946,7 @@ def router_body_stickers():
             
             print("\nWould you like to edit the template?")
             if input("\nHit Enter for yes and n for no.. (y/n): ").lower() != 'n':
-                selected_template = get_custom_input(selected_template)
+                selected_template = user_edits_json(selected_template)
                 # Example of breaking the loop or continuing based on some condition
                 if input("\nDo you want to continue? (y/n): ").lower() != 'n':
                     break
@@ -1165,7 +1176,11 @@ def router_box_stickers():
 
 
     #ESN no.
-    eanno =("0796554198316")
+    eanno = input("Please enter EAN : ")
+
+    if not eanno:
+        eanno = "EAN NOT PROVIDED"
+
     print()
 
 
@@ -1243,11 +1258,6 @@ def router_carton_stickers():
         barcode_width = 90 * mm  # Barcode width
         barcode_height = 16 * mm  # Reduced barcode height
 
-        #wight of one in kg
-        oneBox_Gross_Weight = 1.241
-        oneBox_Net_Weight = 1.016
-
-
 
         while i < len(val1): 
 
@@ -1264,15 +1274,15 @@ def router_carton_stickers():
             ## Above text left ##
             pdf.setFont("Helvetica", 15)
 
-            pdf.drawString(x2, y2, f"Commodity: Credo CR-3120-OD")
-            pdf.drawString(x2, y2-20, f"Color: White")
+            pdf.drawString(x2, y2, f"{carton_data['commodity']}")
+            pdf.drawString(x2, y2-20, f"{carton_data['color']}")
                                 # MODEL PO I03/45005571
-            pdf.drawString(x2, y2-40, f"PO: I03/450055718")
+            pdf.drawString(x2, y2-40, f"{carton_data['po']}")
             
-            pdf.drawString(x2, y2-60, f"Date:02/2024")
+            pdf.drawString(x2, y2-60, f"{carton_data['date']}")
 
-            pdf.drawString(x2, y2-100, f"Gross Wt : {round(oneBox_Gross_Weight * no_of_barcode, 2)} Kg")
-            pdf.drawString(x2, y2-120, f"Net Wt. : {round(oneBox_Net_Weight * no_of_barcode, 2)} Kg")
+            pdf.drawString(x2, y2-100, f"Gross Wt : {round(float(carton_data['oneBox_Gross_Weight']) * no_of_barcode, 2)} Kg")
+            pdf.drawString(x2, y2-120, f"Net Wt. : {round(float(carton_data['oneBox_Net_Weight']) * no_of_barcode, 2)} Kg")
 
             ## Above text right ##
             pdf.drawString(x2+400, y2, f"Carton No. : {ctnno} of {total_boxes}") #make dynamic value
@@ -1380,7 +1390,7 @@ def router_carton_stickers():
 
             msn = input("Enter MSN or Hit Enter to skip: ")
 
-            ean = input("Enter EAN or Hit Enter to skip: ")    
+            ean = input("\nEnter EAN or Hit Enter to skip: ")    
 
             if not msn:
                 msn = "N/A"
@@ -1388,7 +1398,7 @@ def router_carton_stickers():
             if not ean:
                 ean = "N/A"
 
-            startFrom = int(input("Enter Box Number to start printing from : ") or 1)  # Assuming we are starting from box 1 for the sake of demonstration
+            startFrom = int(input(f"\n{BRIGHT_YELLOW}Enter Box Number to start printing from : {CEND}") or 1)  # Assuming we are starting from box 1 for the sake of demonstration
             
 
             searchValue = "box"
@@ -1423,10 +1433,34 @@ def router_carton_stickers():
             sys.exit(1)
 
 
+
+
+
+    file_path = './templates_JSON/CARTON_template.json'
+
+    # IMPORT JSON Data
+    with open(file_path, 'r') as file:
+        carton_data = json.load(file)
+
+    while True:        
+        if carton_data:
+            print(f"{YELLOW}\n<--## Current TEMPLATES ##-->{CEND}")
+            print()
+            for key, value in carton_data.items():
+                print("\t\t\t\t",value)
+            
+            print("\nWould you like to edit the template?")
+            if input("\nHit Enter for yes and n for no.. (y/n): ").lower() != 'n':
+                selected_template = user_edits_json(carton_data)
+                # Example of breaking the loop or continuing based on some condition
+                if input("\nDo you want to continue? (y/n): ").lower() != 'n':
+                    break
+            
+            else:
+                break
+    
     # Load the entire workbook once, instead of in the loop
     location = chooseFile("./ExcelData/")
-    # MODEL DATASET
-    # location = 'MODEL_carton_jio300_7feb24.xlsx'
 
     print()
 
@@ -1440,8 +1474,6 @@ def router_carton_stickers():
 
     # Convert back to DataFrame, setting the header to the second row (index 1)
     df_with_empty_row_above_header = pd.DataFrame(data_with_empty_row)
-
-    print(df_with_empty_row_above_header)
 
     readEXCELnValidate(df_with_empty_row_above_header)
 
