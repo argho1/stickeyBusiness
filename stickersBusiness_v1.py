@@ -890,10 +890,11 @@ def router_body_stickers():
                     edited_template[key] = userInput
             else:
                 edited_template[key] = value
-                print("Value taken from Excel : ",value)
 
+        print()
+        print(f"{BRIGHT_BLUE}Below is the edited data:\n{CEND}")
         for key, value in edited_template.items():
-            print(value)
+            print("\t\t\t\t",f"{BRIGHT_YELLOW}{value}{CEND}")
 
         return edited_template 
     
