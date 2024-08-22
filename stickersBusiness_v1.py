@@ -638,7 +638,6 @@ def router_body_stickers():
                 else:
                     modified_template_data[key] = value
 
-            print(f"dd {modified_template_data}")
 
             # Aligns to the center for router data with 6 catagories
             if chosen_template == "3" :
@@ -681,9 +680,8 @@ def router_body_stickers():
             draw_text(c, align_x, align_y + 7 * mm, text1, head_font_size, font='Helvetica-Bold')
             draw_text(c, align_x + 12 * mm, align_y + 7 * mm, text2, head_font_size)
 
-            
-            for key, value in modified_template_data.items():
-                print(f"dd1 : {key}")
+            # Formats text according to key value
+            for key, value in modified_template_data.items():  
                 if key == 'title':
                     draw_text(c, align_x, space + align_y, f"{value}", font + 2 , font='Helvetica-Bold')
                     space = space - 10
