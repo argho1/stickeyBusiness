@@ -241,6 +241,7 @@ def check_and_create_file():
                 "oneBox_Net_Weight" : "1.016"
             }
 
+            # Check if json files exist, if not create
             if not os.path.exists(f'{directory}\\BODY_template.json'):
                 with open(f"{directory}\\BODY_template.json", 'w') as json_file:
                     json.dump(BODY_template, json_file, indent=4)
@@ -252,6 +253,7 @@ def check_and_create_file():
             if not os.path.exists(f"{directory}\\CARTON_template.json"):
                 with open(f"{directory}\\CARTON_template.json", 'w') as json_file:
                     json.dump(CARTON_template, json_file, indent=4)
+
             
         if directory == './ModelExcelData':
 
@@ -446,6 +448,7 @@ def showExcelTemplate(template_choice):
             | CRARM311736E8D |                 |                 | CR1011-A |
             | CRARM311736E9D | 861942058188338 | 860965062571025 | CR1211-A |
             +----------------+-----------------+-----------------+----------+\033[0m"""
+        
 
 
     print(f"\n{BRIGHT_BLUE}Please have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like exaple below.{CEND}")
@@ -1118,9 +1121,12 @@ def router_box_stickers():
         delete_contents_of_directory(BUFFER_DIR)
 
         return sticker_pdf_name
-
+    
+    # Show how the formatting should be according to choice.
+    showExcelTemplate('1')
 
     location = chooseFile("./ExcelData\\")
+
     BUFFER_DIR = "./bufferDEL"
 
     # Load the Excel file into a pandas DataFrame
