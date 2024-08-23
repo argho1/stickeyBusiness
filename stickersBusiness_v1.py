@@ -470,7 +470,7 @@ def showExcelTemplate(template_choice):
     print(f"\n{BRIGHT_BLUE}Please have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like exaple below.{CEND}")
     print(exampleData)
     
-    userChoice = input(f"\n{BRIGHT_RED}Is your data formatted as displayed above? ( HIT enter to continue ) : {CEND}")
+    userChoice = input(f"\n{BRIGHT_RED}Is your EXCEL sheet formatted as displayed above? ( HIT enter to continue ) : {CEND}")
 
     if userChoice != "":
         showExcelTemplate(template_choice)
