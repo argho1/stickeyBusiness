@@ -449,6 +449,22 @@ def showExcelTemplate(template_choice):
             | CRARM311736E9D | 861942058188338 | 860965062571025 | CR1211-A |
             +----------------+-----------------+-----------------+----------+\033[0m"""
         
+    elif template_choice == 5:
+        exampleData = f"""{YELLOW}EXAMPLE DATA:-
+
+                    |******> For BOX 1 <******|
+
+            +-------+-----------------+-------------------+
+            | BOX 1 |                 |                   |
+            +-------+-----------------+-------------------+
+            |       | SN              | MAC               |
+            +-------+-----------------+-------------------+
+            |   1   | RCRODBK01290308 | 44:B5:9C:00:48:C8 |
+            |   2   | RCRODBK01290336 | 44:B5:9C:00:49:00 |
+            |   3   | RCRODBK01290334 | 44:B5:9C:00:48:FC |
+            |   4   | RCRODBK01290328 | 44:B5:9C:00:48:F0 |
+            |   5   | RCRODBK01290312 | 44:B5:9C:00:48:D0 |
+            +-------+-----------------+-------------------+{CEND}"""
 
 
     print(f"\n{BRIGHT_BLUE}Please have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like exaple below.{CEND}")
@@ -1465,6 +1481,8 @@ def router_carton_stickers():
             else:
                 break
     
+    showExcelTemplate("5")
+
     # Load the entire workbook once, instead of in the loop
     location = chooseFile("./ExcelData/")
 
