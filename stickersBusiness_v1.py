@@ -398,7 +398,7 @@ def banner():
                                       ...
                                        |         {CEND} 
             Stickey Business
-            - by Argho Sinha                     *Version : 1.1.0*
+            - by Argho Sinha                       Version : 1.1.2
     \______________________________________________________________==
 
 """
@@ -1301,15 +1301,15 @@ def router_carton_stickers():
             ## Above text left ##
             pdf.setFont("Helvetica", 15)
 
-            pdf.drawString(x2, y2, f"{carton_data['commodity']}")
-            pdf.drawString(x2, y2-20, f"{carton_data['color']}")
+            pdf.drawString(x2, y2, f"{selected_template['commodity']}")
+            pdf.drawString(x2, y2-20, f"{selected_template['color']}")
                                 # MODEL PO I03/45005571
-            pdf.drawString(x2, y2-40, f"{carton_data['po']}")
+            pdf.drawString(x2, y2-40, f"{selected_template['po']}")
             
-            pdf.drawString(x2, y2-60, f"{carton_data['date']}")
+            pdf.drawString(x2, y2-60, f"{selected_template['date']}")
 
-            pdf.drawString(x2, y2-100, f"Gross Wt : {round(float(carton_data['oneBox_Gross_Weight']) * no_of_barcode, 2)} Kg")
-            pdf.drawString(x2, y2-120, f"Net Wt. : {round(float(carton_data['oneBox_Net_Weight']) * no_of_barcode, 2)} Kg")
+            pdf.drawString(x2, y2-100, f"Gross Wt : {round(float(selected_template['oneBox_Gross_Weight']) * no_of_barcode, 2)} Kg")
+            pdf.drawString(x2, y2-120, f"Net Wt. : {round(float(selected_template['oneBox_Net_Weight']) * no_of_barcode, 2)} Kg")
 
             ## Above text right ##
             pdf.drawString(x2+400, y2, f"Carton No. : {ctnno} of {total_boxes}") #make dynamic value
@@ -1484,6 +1484,7 @@ def router_carton_stickers():
                     break
             
             else:
+                selected_template = carton_data
                 break
     
     showExcelTemplate("5")
