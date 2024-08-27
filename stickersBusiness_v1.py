@@ -1246,7 +1246,7 @@ def router_carton_stickers():
         start_time = time.time()
 
         # Create PDF canvas
-        pdf = canvas.Canvas(f'.\Router_Carton_Stickers_PDF\\Box{ctnno}.pdf', pagesize=A4)
+        pdf = canvas.Canvas(f'.\Router_Carton_Stickers_PDF\\Carton_{ctnno}_stickers.pdf', pagesize=A4)
 
         #collecting data fomr excel file and storing it in an array
         val1 = []
