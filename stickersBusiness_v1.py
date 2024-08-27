@@ -1077,21 +1077,21 @@ def router_box_stickers():
 
                 # Add the data as text inside the sticker
                 c.setFillColor(colors.black)
-                c.drawString(text_x, text_y, data["data1"])
-                c.drawString(text_x+150, text_y, data["data1a"])
-                c.drawString(text_x, text_y - 20, data["data2"])
-                c.drawString(text_x+150, text_y - 20, data["data2a"])
-                c.drawString(text_x, text_y - 40, data["data3"])
-                c.drawString(text_x+150, text_y - 40, data["data3a"])
-                c.drawString(text_x+160, text_y - 60, data["data31"])
-                c.drawString(text_x, text_y - 85, data["data4"])
-                c.drawString(text_x, text_y - 120, data["data5"])
-                c.drawString(text_x+150, text_y - 120, data["data5a"])
-                c.drawString(text_x+160, text_y - 140, data["data51"])
-                c.drawString(text_x, text_y - 160, data["data6"])
-                c.drawString(text_x+150, text_y - 160, data["data6a"])
-                c.drawString(text_x, text_y - 180, data["data7"])
-                c.drawString(text_x+150, text_y - 180, data["data7a"])
+                c.drawString(text_x, text_y, selected_template["data1"])
+                c.drawString(text_x+150, text_y, selected_template["data1a"])
+                c.drawString(text_x, text_y - 20, selected_template["data2"])
+                c.drawString(text_x+150, text_y - 20, selected_template["data2a"])
+                c.drawString(text_x, text_y - 40, selected_template["data3"])
+                c.drawString(text_x+150, text_y - 40, selected_template["data3a"])
+                c.drawString(text_x+160, text_y - 60, selected_template["data31"])
+                c.drawString(text_x, text_y - 85, selected_template["data4"])
+                c.drawString(text_x, text_y - 120, selected_template["data5"])
+                c.drawString(text_x+150, text_y - 120, selected_template["data5a"])
+                c.drawString(text_x+160, text_y - 140, selected_template["data51"])
+                c.drawString(text_x, text_y - 160, selected_template["data6"])
+                c.drawString(text_x+150, text_y - 160, selected_template["data6a"])
+                c.drawString(text_x, text_y - 180, selected_template["data7"])
+                c.drawString(text_x+150, text_y - 180, selected_template["data7a"])
 
                 # Generate and add barcode below data3
                 barcode_x = sticker_x * 10.8 + 50
@@ -1143,6 +1143,31 @@ def router_box_stickers():
 
         return sticker_pdf_name
     
+
+
+    file_path = './templates_JSON/BOX_template.json'
+
+    # IMPORT JSON Data
+    with open(file_path, 'r') as file:
+        box_json_data = json.load(file)
+
+    while True:
+        if box_json_data:
+            print()
+            for key, value in box_json_data.items():
+                print("\t\t\t\t",value)
+            
+            print("\nWould you like to edit the template?")
+            if input("\nHit Enter for yes and n for no.. (y/n): ").lower() != 'n':
+                selected_template = user_edits_json(box_json_data)
+                # Example of breaking the loop or continuing based on some condition
+                if input("\nDo you want to continue? (y/n): ").lower() != 'n':
+                    break
+            
+            else:
+                selected_template = box_json_data
+                break
+    
     # Show how the formatting should be according to choice.
     showExcelTemplate('1')
 
@@ -1188,13 +1213,6 @@ def router_box_stickers():
         sys.exit(1)
 
     no_of_barcode = len(sn_list)
-
-    file_path = './templates_JSON/BOX_template.json'
-
-    # IMPORT JSON Data
-    with open(file_path, 'r') as file:
-        data = json.load(file)
-
 
     barcodes = sn_list
 
