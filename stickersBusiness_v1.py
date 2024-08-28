@@ -1249,14 +1249,25 @@ def router_carton_stickers():
         current_box = None  # To keep track of the current box number
 
         for index, row in excel_data.iterrows():
-            # Check if any of the terms in boxvalue4search are in the first cell of the row
-            if any(search_term in str(row[0]).lower().replace('.','').replace(" ","") for search_term in boxvalue4search):
-                current_box = str(row[0])  # Update the current box number
-                box_data[current_box] = {'SN': [], 'MAC': []}
-            elif pd.notnull(row[1]) and pd.notnull(row[2]) and current_box:
-                box_data[current_box]['SN'].append(row[1])
-                box_data[current_box]['MAC'].append(row[2])
+            try:
+                # Check if any of the terms in boxvalue4search are in the first cell of the row
+                if any(search_term in str(row[0]).lower().replace('.','').replace(" ","") for search_term in boxvalue4search):
+                    current_box = str(row[0])  # Update the current box number
+                    box_data[current_box] = {'SN': [], 'MAC': []}
+                
+                elif pd.notnull(row[1]) and pd.notnull(row[2]) and current_box:
+                    box_data[current_box]['SN'].append(row[1])
+                    box_data[current_box]['MAC'].append(row[2])
+            except KeyError as ke:
+                # Check if any of the terms in boxvalue4search are in the first cell of the row
+                if any(search_term in str(row[0]).lower().replace('.','').replace(" ","") for search_term in boxvalue4search):
+                    current_box = str(row[0])  # Update the current box number
+                    box_data[current_box] = {'SN': []}
+                
+                elif pd.notnull(row[1]) and current_box:
+                    box_data[current_box]['SN'].append(row[1])
 
+        print(box_data)
         return box_data
 
     def cartonStickers(data, ctnno, total_boxes, msn, ean):
@@ -1267,9 +1278,6 @@ def router_carton_stickers():
         pdf = canvas.Canvas(f'.\Router_Carton_Stickers_PDF\\Carton_{ctnno}_stickers.pdf', pagesize=A4)
 
         #collecting data fomr excel file and storing it in an array
-        val1 = []
-        val2 = []
-
         val1 = data['SN'][1:]
         val2 = data['MAC'][1:]
 
@@ -1362,15 +1370,20 @@ def router_carton_stickers():
             rsn_image.save(rsn_image_filename)
             pdf.drawImage(rsn_image_filename, x, y-18, width=barcode_width, height=barcode_height+12)
             pdf.drawString(x-35, y+25, f"SN:")
-            #pdf.drawString(x-30, y+15, f"{no}")
-
-
-            macid = Code128(val2[i], writer=ImageWriter())
+            
+            # IN case no mac found or mac and sn number mismatch don't print mac
+            if len(val2) == len(val1):
+                macid = Code128(val2[i], writer=ImageWriter())
+                pdf.drawString(x2+311, y2-130, f"MAC ID: ")
+            else:
+                i += 1
+                macid = Code128(val1[i], writer=ImageWriter())
+                
             macid_image = macid.render(writer_options={'module_width': 2.8, 'module_height': 80, "font_size": 20*5, "text_distance": 40, "quite_zone": 10})
             macid_image_filename = (f"./bufferDEL/macid_barcode{i}.png")
             macid_image.save(macid_image_filename)
             pdf.drawImage(macid_image_filename, x1, y1-18, width=barcode_width, height=barcode_height+12)   
-            pdf.drawString(x2+311, y2-130, f"MAC ID: ")
+            
             
             
 
@@ -1405,7 +1418,7 @@ def router_carton_stickers():
         # Save the PDF
         print()
         pdf.save()
-        print(f"{GREEN}File saved at : Router_Carton_Stickers_PDF/Box{ctnno}.pdf{CEND}\n")
+        print(f"{GREEN}File saved at : Router_Carton_Stickers_PDF/Carton_{ctnno}_stickers.pdf{CEND}\n")
         
 
     def readEXCELnValidate(df):
