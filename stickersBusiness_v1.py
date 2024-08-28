@@ -1364,7 +1364,7 @@ def router_carton_stickers():
             ## SN placed on the left side of the page. 
 
             # Insert barcode image into PDF
-            rsn = Code128(val1[i], writer=ImageWriter())
+            rsn = Code128(str(val1[i]), writer=ImageWriter())
             rsn_image = rsn.render(writer_options={'module_width': 2.8, 'module_height': 80, "font_size": 20*5  , "text_distance": 40, "quite_zone": 10})
             rsn_image_filename = (f"./bufferDEL/rsn_barcode_{i}.png")
             rsn_image.save(rsn_image_filename)
@@ -1373,11 +1373,11 @@ def router_carton_stickers():
             
             # IN case no mac found or mac and sn number mismatch don't print mac
             if len(val2) == len(val1):
-                macid = Code128(val2[i], writer=ImageWriter())
+                macid = Code128(str(val2[i]), writer=ImageWriter())
                 pdf.drawString(x2+311, y2-130, f"MAC ID: ")
             else:
                 i += 1
-                macid = Code128(val1[i], writer=ImageWriter())
+                macid = Code128(str(val1[i]), writer=ImageWriter())
                 
             macid_image = macid.render(writer_options={'module_width': 2.8, 'module_height': 80, "font_size": 20*5, "text_distance": 40, "quite_zone": 10})
             macid_image_filename = (f"./bufferDEL/macid_barcode{i}.png")
