@@ -127,7 +127,10 @@ def user_edits_json(selected_template):
     print()
     print(f"{BRIGHT_BLUE}Below is the edited data:\n{CEND}")
     for key, value in edited_template.items():
-        print("\t\t\t\t",f"{BRIGHT_YELLOW}{value}{CEND}")
+        if key == 'oneBox_Net_Weight' or key == 'oneBox_Gross_Weight':
+            print("\t\t\t\t",f"{BRIGHT_YELLOW}{key} : {value}{CEND}")
+        else:
+            print("\t\t\t\t",f"{BRIGHT_YELLOW}{value}{CEND}")
 
     return edited_template 
 
@@ -452,19 +455,19 @@ def showExcelTemplate(template_choice):
     elif template_choice == 5:
         exampleData = f"""{YELLOW}EXAMPLE DATA:-
 
-                    |******> For BOX 1 <******|
+                    |******> For BOX 1 <******|                      |******> For BOX 1 <******|
 
-            +-------+-----------------+-------------------+
-            | BOX 1 |                 |                   |
-            +-------+-----------------+-------------------+
-            |       | SN              | MAC               |
-            +-------+-----------------+-------------------+
-            |   1   | RCRODBK01290308 | 44:B5:9C:00:48:C8 |
-            |   2   | RCRODBK01290336 | 44:B5:9C:00:49:00 |
-            |   3   | RCRODBK01290334 | 44:B5:9C:00:48:FC |
-            |   4   | RCRODBK01290328 | 44:B5:9C:00:48:F0 |
-            |   5   | RCRODBK01290312 | 44:B5:9C:00:48:D0 |
-            +-------+-----------------+-------------------+{CEND}"""
+            +-------+-----------------+-------------------+          +-------+-----------------+
+            | BOX 1 |                 |                   |          | BOX 1 |                 |
+            +-------+-----------------+-------------------+          +-------+-----------------+
+            |       | SN              | MAC               |          |       | SN              |
+            +-------+-----------------+-------------------+          +-------+-----------------+
+            |   1   | RCRODBK01290308 | 44:B5:9C:00:48:C8 |    OR    |   1   | RCRODBK01290308 |
+            |   2   | RCRODBK01290336 | 44:B5:9C:00:49:00 |          |   2   | RCRODBK01290336 |
+            |   3   | RCRODBK01290334 | 44:B5:9C:00:48:FC |          |   3   | RCRODBK01290334 |
+            |   4   | RCRODBK01290328 | 44:B5:9C:00:48:F0 |          |   4   | RCRODBK01290328 |
+            |   5   | RCRODBK01290312 | 44:B5:9C:00:48:D0 |          |   5   | RCRODBK01290312 |
+            +-------+-----------------+-------------------+          +-------+-----------------+{CEND}"""
 
 
     print(f"\n{BRIGHT_BLUE}Please have data in .xlsx format with comumn names as SN for Serial Number and WAN_MAC for WAN MAC like exaple below.{CEND}")
