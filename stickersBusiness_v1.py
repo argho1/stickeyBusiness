@@ -114,7 +114,11 @@ def user_edits_json(selected_template):
     for key, value in selected_template.items():
         
         if 'excel' not in value.strip().lower().replace(" ",""):
-            print("\nDefault : ", str(value),'kg')
+            if key == 'oneBox_Gross_Weight' or key == 'oneBox_Net_Weight':   
+                print("\nDefault : ", str(value), "kg")
+            else:
+                print("\nDefault : ", str(value))
+
             userInput = input("\nEnter data or Hit enter to select default data :")
             
             if userInput == "":
@@ -1270,7 +1274,6 @@ def router_carton_stickers():
                 elif pd.notnull(row[1]) and current_box:
                     box_data[current_box]['SN'].append(row[1])
 
-        print(box_data)
         return box_data
 
     def cartonStickers(data, ctnno, total_boxes, msn, ean):
