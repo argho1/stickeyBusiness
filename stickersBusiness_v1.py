@@ -114,7 +114,7 @@ def user_edits_json(selected_template):
     for key, value in selected_template.items():
         
         if 'excel' not in value.strip().lower().replace(" ",""):
-            print("\nDefault : ", str(value))
+            print("\nDefault : ", str(value),'kg')
             userInput = input("\nEnter data or Hit enter to select default data :")
             
             if userInput == "":
@@ -128,7 +128,7 @@ def user_edits_json(selected_template):
     print(f"{BRIGHT_BLUE}Below is the edited data:\n{CEND}")
     for key, value in edited_template.items():
         if key == 'oneBox_Net_Weight' or key == 'oneBox_Gross_Weight':
-            print("\t\t\t\t",f"{BRIGHT_YELLOW}{key} : {value}{CEND}")
+            print("\t\t\t\t",f"{BRIGHT_YELLOW}{key} : {value} kg{CEND}")
         else:
             print("\t\t\t\t",f"{BRIGHT_YELLOW}{value}{CEND}")
 
@@ -1508,7 +1508,11 @@ def router_carton_stickers():
             print(f"{YELLOW}\n<--## Current TEMPLATES ##-->{CEND}")
             print()
             for key, value in carton_data.items():
-                print("\t\t\t\t",value)
+                if key == 'oneBox_Gross_Weight' or key == 'oneBox_Net_Weight':
+                    print("\t\t\t\t",key," : ",value,"kg")
+                else:
+                    print("\t\t\t\t",value)
+
             
             print("\nWould you like to edit the template?")
             if input("\nHit Enter for yes and n for no.. (y/n): ").lower() != 'n':
