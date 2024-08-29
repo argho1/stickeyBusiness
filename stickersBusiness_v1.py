@@ -401,7 +401,7 @@ def banner():
                                       ...
                                        |         {CEND} 
             Stickey Business
-            - by Argho Sinha                       Version : 1.1.2
+            - by Argho Sinha                       Version : 1.1.3
     \______________________________________________________________==
 
 """
